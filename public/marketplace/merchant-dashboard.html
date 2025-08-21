@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Commerçant - Localement Vôtre</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            transition: all 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        .stat-card {
+            background: linear-gradient(45deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .subscription-card {
+            border-left: 4px solid #28a745;
+        }
+        .backend-status {
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">🏪 Mon Espace</h4>
+                        <small class="text-light" id="merchant-name">Boutique Clara</small>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('products')">
+                                <i class="bi bi-box me-2"></i>
+                                Mes Produits
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('orders')">
+                                <i class="bi bi-cart me-2"></i>
+                                Commandes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('subscription')">
+                                <i class="bi bi-credit-card me-2"></i>
+                                Mon Abonnement
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('backend')">
+                                <i class="bi bi-server me-2"></i>
+                                Mon Site
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('support')">
+                                <i class="bi bi-headset me-2"></i>
+                                Support
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <hr class="my-3" style="border-color: rgba(255,255,255,0.2);">
+                    
+                    <div class="text-center">
+                        <small class="text-light">Plan: <span id="current-plan">Starter</span></small>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2" id="page-title">Dashboard</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <button type="button" class="btn btn-outline-secondary btn-sm me-2" onclick="refreshData()">
+                            <i class="bi bi-arrow-clockwise"></i> Actualiser
+                        </button>
+                        <button type="button" class="btn btn-success btn-sm" onclick="openStorefront()">
+                            <i class="bi bi-eye"></i> Voir ma boutique
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="content-section">
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title">Produits</h5>
+                                            <h2 class="mb-0" id="stat-products">12</h2>
+                                            <small>En ligne</small>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-box display-4 opacity-50"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title">Commandes</h5>
+                                            <h2 class="mb-0" id="stat-orders">47</h2>
+                                            <small>Ce mois</small>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-cart display-4 opacity-50"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title">Revenus</h5>
+                                            <h2 class="mb-0" id="stat-revenue">1,247€</h2>
+                                            <small>Ce mois</small>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-currency-euro display-4 opacity-50"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <h5 class="card-title">Visiteurs</h5>
+                                            <h2 class="mb-0" id="stat-visitors">324</h2>
+                                            <small>Cette semaine</small>
+                                        </div>
+                                        <div class="align-self-center">
+                                            <i class="bi bi-eye display-4 opacity-50"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Commandes Récentes</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>N° Commande</th>
+                                                    <th>Client</th>
+                                                    <th>Montant</th>
+                                                    <th>Statut</th>
+                                                    <th>Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><code>#CMD-2025-001</code></td>
+                                                    <td>Marie Dupont</td>
+                                                    <td>85,50€</td>
+                                                    <td><span class="badge bg-success">Expédiée</span></td>
+                                                    <td>19/08/2025</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>#CMD-2025-002</code></td>
+                                                    <td>Pierre Martin</td>
+                                                    <td>42,00€</td>
+                                                    <td><span class="badge bg-warning">En préparation</span></td>
+                                                    <td>20/08/2025</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>#CMD-2025-003</code></td>
+                                                    <td>Sophie Durand</td>
+                                                    <td>127,80€</td>
+                                                    <td><span class="badge bg-info">Nouvelle</span></td>
+                                                    <td>20/08/2025</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4 mb-4">
+                            <div class="card subscription-card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Mon Abonnement</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="fw-bold">Plan Starter</span>
+                                        <span class="badge bg-success">Actif</span>
+                                    </div>
+                                    <p class="text-muted">19,99€ / mois</p>
+                                    <p class="small mb-3">Prochaine facturation: 3 septembre 2025</p>
+                                    
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <small>Produits utilisés</small>
+                                            <small>12/50</small>
+                                        </div>
+                                        <div class="progress" style="height: 5px;">
+                                            <div class="progress-bar bg-success" style="width: 24%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn btn-outline-primary btn-sm w-100" onclick="showSection('subscription')">
+                                        Gérer l'abonnement
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="card mt-3">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0">Mon Site Web</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="backend-status">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-bold">clara-boutique.marketplace.local</span>
+                                            <span class="badge bg-success">En ligne</span>
+                                        </div>
+                                        <p class="small text-muted mb-3">Dernière mise à jour: il y a 2h</p>
+                                        <button class="btn btn-outline-success btn-sm w-100" onclick="openStorefront()">
+                                            <i class="bi bi-eye"></i> Voir le site
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subscription Section -->
+                <div id="subscription-section" class="content-section" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Détails de l'Abonnement</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Plan Actuel</h6>
+                                            <p class="lead">Starter</p>
+                                            <p>19,99€ / mois</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Statut</h6>
+                                            <span class="badge bg-success fs-6">Actif</span>
+                                            <p class="mt-2">Période d'essai jusqu'au 3 septembre 2025</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <h6>Utilisation</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Produits</label>
+                                            <div class="progress">
+                                                <div class="progress-bar" style="width: 24%">12/50</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Commandes</label>
+                                            <div class="progress">
+                                                <div class="progress-bar" style="width: 47%">47/100</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Stockage</label>
+                                            <div class="progress">
+                                                <div class="progress-bar" style="width: 15%">150MB/1GB</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-primary me-2">Changer de plan</button>
+                                    <button class="btn btn-outline-danger">Annuler l'abonnement</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Facturation</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Prochaine facturation:</strong><br>3 septembre 2025</p>
+                                    <p><strong>Montant:</strong><br>19,99€</p>
+                                    <p><strong>Mode de paiement:</strong><br>**** **** **** 1234</p>
+                                    <button class="btn btn-outline-primary btn-sm w-100">Modifier le paiement</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backend Section -->
+                <div id="backend-section" class="content-section" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Mon Site Web</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>URL de la boutique</h6>
+                                            <div class="input-group mb-3">
+                                                <input type="text" class="form-control" value="clara-boutique.marketplace.local" readonly>
+                                                <button class="btn btn-outline-secondary" type="button" onclick="copyUrl()">
+                                                    <i class="bi bi-copy"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Statut du site</h6>
+                                            <span class="badge bg-success fs-6">En ligne</span>
+                                            <p class="mt-2">Dernière vérification: il y a 5 minutes</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <h6>Statistiques du site</h6>
+                                    <div class="row">
+                                        <div class="col-md-3 text-center">
+                                            <h4 class="text-primary">324</h4>
+                                            <small>Visiteurs cette semaine</small>
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <h4 class="text-success">12</h4>
+                                            <small>Commandes</small>
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <h4 class="text-info">3.7%</h4>
+                                            <small>Taux de conversion</small>
+                                        </div>
+                                        <div class="col-md-3 text-center">
+                                            <h4 class="text-warning">2m 15s</h4>
+                                            <small>Temps moyen</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-success me-2" onclick="openStorefront()">
+                                        <i class="bi bi-eye"></i> Voir le site
+                                    </button>
+                                    <button class="btn btn-outline-primary me-2">
+                                        <i class="bi bi-gear"></i> Paramètres
+                                    </button>
+                                    <button class="btn btn-outline-warning">
+                                        <i class="bi bi-arrow-clockwise"></i> Redémarrer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Informations Techniques</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Version:</strong> 1.0.0</p>
+                                    <p><strong>Template:</strong> Boutique Éthique</p>
+                                    <p><strong>SSL:</strong> <span class="badge bg-success">Actif</span></p>
+                                    <p><strong>Sauvegardes:</strong> Quotidiennes</p>
+                                    <p><strong>Stockage utilisé:</strong> 150MB / 1GB</p>
+                                    
+                                    <hr>
+                                    
+                                    <h6>Actions rapides</h6>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-info btn-sm">Télécharger sauvegarde</button>
+                                        <button class="btn btn-outline-secondary btn-sm">Logs du serveur</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Section -->
+                <div id="support-section" class="content-section" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Mes Tickets de Support</h5>
+                                    <button class="btn btn-primary btn-sm" onclick="showNewTicketModal()">
+                                        <i class="bi bi-plus"></i> Nouveau ticket
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Numéro</th>
+                                                    <th>Sujet</th>
+                                                    <th>Statut</th>
+                                                    <th>Priorité</th>
+                                                    <th>Dernière réponse</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><code>TKT-001</code></td>
+                                                    <td>Problème de paiement Stripe</td>
+                                                    <td><span class="badge bg-warning">En cours</span></td>
+                                                    <td><span class="badge bg-danger">Urgent</span></td>
+                                                    <td>Il y a 2h</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><code>TKT-002</code></td>
+                                                    <td>Question sur les frais d'abonnement</td>
+                                                    <td><span class="badge bg-success">Résolu</span></td>
+                                                    <td><span class="badge bg-info">Normal</span></td>
+                                                    <td>Hier</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Centre d'Aide</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Questions Fréquentes</h6>
+                                    <div class="list-group list-group-flush">
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            Comment ajouter des produits ?
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            Configuration des modes de paiement
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            Gestion des commandes
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            Personnalisation du site
+                                        </a>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <h6>Contact</h6>
+                                    <p class="small">Support disponible du lundi au vendredi de 9h à 18h</p>
+                                    <p class="small">
+                                        <i class="bi bi-envelope"></i> support@marketplace.local<br>
+                                        <i class="bi bi-phone"></i> 01 23 45 67 89
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showSection(sectionName) {
+            // Masquer toutes les sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Afficher la section demandée
+            document.getElementById(`${sectionName}-section`).style.display = 'block';
+            
+            // Mettre à jour la navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Mettre à jour le titre
+            const titles = {
+                dashboard: 'Dashboard',
+                products: 'Mes Produits',
+                orders: 'Commandes',
+                subscription: 'Mon Abonnement',
+                backend: 'Mon Site Web',
+                support: 'Support'
+            };
+            
+            document.getElementById('page-title').textContent = titles[sectionName] || 'Dashboard';
+        }
+
+        function refreshData() {
+            alert('Données actualisées !');
+        }
+
+        function openStorefront() {
+            window.open('/marketplace/boutique-clara.html', '_blank');
+        }
+
+        function copyUrl() {
+            navigator.clipboard.writeText('clara-boutique.marketplace.local').then(() => {
+                alert('URL copiée !');
+            });
+        }
+
+        function showNewTicketModal() {
+            alert('Modal de création de ticket (à implémenter)');
+        }
+    </script>
+</body>
+</html>

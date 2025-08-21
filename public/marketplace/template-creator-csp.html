@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Créateur de Templates - Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .step-container {
+            display: none;
+        }
+        .step-container.active {
+            display: block;
+        }
+        .template-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .template-card:hover {
+            border-color: #007bff;
+            transform: translateY(-2px);
+        }
+        .template-card.selected {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+        .color-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 5px;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.selected {
+            border-color: #000;
+        }
+        .component-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .component-item:hover {
+            border-color: #007bff;
+        }
+        .component-item.selected {
+            border-color: #007bff;
+            background-color: #f0f8ff;
+        }
+        .preview-frame {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            min-height: 400px;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            color: #666;
+            font-weight: bold;
+        }
+        .step-number.active {
+            background: #007bff;
+            color: white;
+        }
+        .step-number.completed {
+            background: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="bi bi-shop"></i> Marketplace Local</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="templates.html">← Retour aux Templates</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="mb-0"><i class="fas fa-magic me-2"></i>Créateur de Templates</h2>
+                    </div>
+                    <div class="card-body p-4">
+                        
+                        <!-- Indicateur d'étapes -->
+                        <div class="step-indicator">
+                            <div class="step-number active" id="step1">1</div>
+                            <div class="step-number" id="step2">2</div>
+                            <div class="step-number" id="step3">3</div>
+                            <div class="step-number" id="step4">4</div>
+                        </div>
+
+                        <!-- Étape 1: Type de template -->
+                        <div class="step-container active" id="stepContainer1">
+                            <h3 class="mb-4">Étape 1: Choisissez le type de template</h3>
+                            <div class="row">
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="template-card text-center template-type-card" data-type="restaurant">
+                                        <i class="fas fa-utensils fa-3x text-danger mb-3"></i>
+                                        <h5>Restaurant</h5>
+                                        <p class="text-muted">Menu, réservations, galerie</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="template-card text-center template-type-card" data-type="commerce">
+                                        <i class="fas fa-shopping-cart fa-3x text-primary mb-3"></i>
+                                        <h5>Commerce</h5>
+                                        <p class="text-muted">Boutique, produits, commandes</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="template-card text-center template-type-card" data-type="artisan">
+                                        <i class="fas fa-hammer fa-3x text-warning mb-3"></i>
+                                        <h5>Artisan</h5>
+                                        <p class="text-muted">Portfolio, services, contact</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="template-card text-center template-type-card" data-type="service">
+                                        <i class="fas fa-cogs fa-3x text-info mb-3"></i>
+                                        <h5>Service</h5>
+                                        <p class="text-muted">Prestations, équipe, devis</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="template-card text-center template-type-card" data-type="beaute">
+                                        <i class="fas fa-cut fa-3x text-success mb-3"></i>
+                                        <h5>Beauté</h5>
+                                        <p class="text-muted">Salon, rendez-vous, tarifs</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="template-card text-center template-type-card" data-type="autre">
+                                        <i class="fas fa-star fa-3x text-secondary mb-3"></i>
+                                        <h5>Autre</h5>
+                                        <p class="text-muted">Template personnalisé</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 2: Couleurs -->
+                        <div class="step-container" id="stepContainer2">
+                            <h3 class="mb-4">Étape 2: Choisissez les couleurs</h3>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="mb-3">Couleur principale</h5>
+                                    <div class="d-flex flex-wrap">
+                                        <div class="color-option color-choice" data-color="blue" style="background-color: #007bff;"></div>
+                                        <div class="color-option color-choice" data-color="green" style="background-color: #28a745;"></div>
+                                        <div class="color-option color-choice" data-color="red" style="background-color: #dc3545;"></div>
+                                        <div class="color-option color-choice" data-color="orange" style="background-color: #fd7e14;"></div>
+                                        <div class="color-option color-choice" data-color="purple" style="background-color: #6f42c1;"></div>
+                                        <div class="color-option color-choice" data-color="pink" style="background-color: #e83e8c;"></div>
+                                        <div class="color-option color-choice" data-color="dark" style="background-color: #343a40;"></div>
+                                        <div class="color-option color-choice" data-color="teal" style="background-color: #20c997;"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>Aperçu des couleurs</h6>
+                                            <div id="colorPreview" class="p-3 rounded" style="background-color: #007bff; color: white;">
+                                                <h6>Titre de section</h6>
+                                                <p class="mb-0">Exemple de texte avec la couleur sélectionnée</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 3: Composants -->
+                        <div class="step-container" id="stepContainer3">
+                            <h3 class="mb-4">Étape 3: Sélectionnez les composants</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="component-item component-choice" data-component="header">
+                                        <i class="fas fa-window-maximize me-2"></i>
+                                        <strong>En-tête avec navigation</strong>
+                                        <p class="mb-0 text-muted small">Logo et menu de navigation</p>
+                                    </div>
+                                    <div class="component-item component-choice" data-component="hero">
+                                        <i class="fas fa-image me-2"></i>
+                                        <strong>Section d'accueil</strong>
+                                        <p class="mb-0 text-muted small">Bannière principale avec titre</p>
+                                    </div>
+                                    <div class="component-item component-choice" data-component="about">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>À propos</strong>
+                                        <p class="mb-0 text-muted small">Présentation de l'entreprise</p>
+                                    </div>
+                                    <div class="component-item component-choice" data-component="services">
+                                        <i class="fas fa-list me-2"></i>
+                                        <strong>Services/Produits</strong>
+                                        <p class="mb-0 text-muted small">Liste des offres</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="component-item component-choice" data-component="gallery">
+                                        <i class="fas fa-images me-2"></i>
+                                        <strong>Galerie photos</strong>
+                                        <p class="mb-0 text-muted small">Showcase d'images</p>
+                                    </div>
+                                    <div class="component-item component-choice" data-component="contact">
+                                        <i class="fas fa-envelope me-2"></i>
+                                        <strong>Contact</strong>
+                                        <p class="mb-0 text-muted small">Formulaire et informations</p>
+                                    </div>
+                                    <div class="component-item component-choice" data-component="testimonials">
+                                        <i class="fas fa-quote-left me-2"></i>
+                                        <strong>Témoignages</strong>
+                                        <p class="mb-0 text-muted small">Avis clients</p>
+                                    </div>
+                                    <div class="component-item component-choice" data-component="footer">
+                                        <i class="fas fa-window-minimize me-2"></i>
+                                        <strong>Pied de page</strong>
+                                        <p class="mb-0 text-muted small">Informations de contact</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Étape 4: Aperçu et sauvegarde -->
+                        <div class="step-container" id="stepContainer4">
+                            <h3 class="mb-4">Étape 4: Aperçu et sauvegarde</h3>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="preview-frame" id="templatePreview">
+                                        <div class="text-center py-5">
+                                            <i class="fas fa-eye fa-3x text-muted mb-3"></i>
+                                            <h5>Aperçu du template</h5>
+                                            <p class="text-muted">Votre template sera affiché ici</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Informations du template</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Nom du template</label>
+                                                <input type="text" class="form-control" id="templateName" placeholder="Mon super template">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Description</label>
+                                                <textarea class="form-control" id="templateDescription" rows="3" placeholder="Description du template..."></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <strong>Résumé:</strong>
+                                                <ul class="list-unstyled mt-2" id="templateSummary">
+                                                    <li><strong>Type:</strong> <span id="summaryType">Non sélectionné</span></li>
+                                                    <li><strong>Couleur:</strong> <span id="summaryColor">Non sélectionnée</span></li>
+                                                    <li><strong>Composants:</strong> <span id="summaryComponents">Aucun</span></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Boutons de navigation -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button class="btn btn-secondary" id="prevBtn" disabled>
+                                <i class="fas fa-arrow-left me-1"></i> Précédent
+                            </button>
+                            <button class="btn btn-primary" id="nextBtn">
+                                Suivant <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                            <button class="btn btn-success d-none" id="saveBtn">
+                                <i class="fas fa-save me-1"></i> Sauvegarder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script externe pour éviter les problèmes CSP -->
+    <script src="./template-creator.js"></script>
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Sites - Commerçants & Artisans</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #f8f9fa;
+        }
+        
+        .header {
+            background: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .main-title {
+            color: #495057;
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+        
+        .steps-nav {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .step-item.active {
+            color: #007bff;
+            font-weight: 600;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .step-item.active .step-number {
+            background: #007bff;
+            color: white;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            color: #495057;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .template-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        
+        .template-card:hover {
+            border-color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+        }
+        
+        .template-card.selected {
+            border-color: #007bff !important;
+            box-shadow: 0 4px 12px rgba(0,123,255,0.2) !important;
+            background: #f8f9ff;
+        }
+        
+        .template-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #007bff;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .template-preview {
+            height: 180px;
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .template-info {
+            padding: 1rem;
+        }
+        
+        .template-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        
+        .template-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .color-option {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .color-option:hover {
+            border-color: #007bff;
+        }
+        
+        .color-option.selected {
+            border-color: #007bff !important;
+            background: #f8f9ff;
+            position: relative;
+        }
+        
+        .color-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #007bff;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .color-preview {
+            height: 40px;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .color-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            border-color: #007bff;
+        }
+        
+        .feature-card.selected {
+            border-color: #28a745 !important;
+            background: #f8fff9;
+            position: relative;
+        }
+        
+        .feature-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #28a745;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-card.selected .feature-icon {
+            color: #28a745;
+        }
+        
+        .feature-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        
+        .preview-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 1.5rem;
+        }
+        
+        .preview-header {
+            background: #495057;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+        
+        .btn-custom {
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary-custom {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary-custom:hover {
+            background: #0056b3;
+            color: white;
+        }
+        
+        .btn-secondary-custom {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary-custom:hover {
+            background: #545b62;
+            color: white;
+        }
+        
+        .btn-success-custom {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success-custom:hover {
+            background: #1e7e34;
+            color: white;
+        }
+        
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="text-center">
+                <h1 class="main-title">Créateur de Sites Web</h1>
+                <p class="subtitle">Créez facilement un site professionnel pour votre commerce ou activité</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="steps-nav">
+            <div class="step-indicator">
+                <div class="step-item active" id="stepItem1">
+                    <div class="step-number">1</div>
+                    <span>Type de site</span>
+                </div>
+                <div class="step-item" id="stepItem2">
+                    <div class="step-number">2</div>
+                    <span>Couleurs</span>
+                </div>
+                <div class="step-item" id="stepItem3">
+                    <div class="step-number">3</div>
+                    <span>Options</span>
+                </div>
+                <div class="step-item" id="stepItem4">
+                    <div class="step-number">4</div>
+                    <span>Aperçu</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-card">
+            <!-- Étape 1: Type de site -->
+            <div class="step-content active" id="stepContent1">
+                <h2 class="section-title">Quel type de site voulez-vous créer ?</h2>
+                <p class="text-muted">Choisissez le modèle qui correspond le mieux à votre activité</p>
+                
+                <div class="template-grid">
+                    <div class="template-card" data-template="restaurant">
+                        <div class="template-preview">
+                            <iframe srcdoc="<!DOCTYPE html><html><head><style>body{margin:0;font-family:Arial;background:#8B4513;color:white;padding:2rem;text-align:center;min-height:140px;display:flex;flex-direction:column;justify-content:center;}h2{margin-bottom:1rem;}.btn{background:#DAA520;padding:0.5rem 1rem;border:none;color:white;border-radius:4px;}</style></head><body><h2>Restaurant Le Bon Goût</h2><p>Cuisine traditionnelle française</p><button class='btn'>Voir la carte</button></body></html>" style="width: 100%; height: 100%; border: none; transform: scale(0.9);"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3 class="template-title">Restaurant / Bar</h3>
+                            <p class="template-description">Parfait pour présenter votre établissement, vos plats et permettre les réservations</p>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card" data-template="commerce">
+                        <div class="template-preview">
+                            <iframe srcdoc="<!DOCTYPE html><html><head><style>body{margin:0;font-family:Arial;background:#007bff;color:white;padding:2rem;text-align:center;min-height:140px;display:flex;flex-direction:column;justify-content:center;}h2{margin-bottom:1rem;}.btn{background:#28a745;padding:0.5rem 1rem;border:none;color:white;border-radius:4px;}</style></head><body><h2>Boutique Locale</h2><p>Produits de qualité et service personnalisé</p><button class='btn'>Nos produits</button></body></html>" style="width: 100%; height: 100%; border: none; transform: scale(0.9);"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3 class="template-title">Commerce / Boutique</h3>
+                            <p class="template-description">Idéal pour présenter vos produits et services avec catalogue en ligne</p>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card" data-template="artisan">
+                        <div class="template-preview">
+                            <iframe srcdoc="<!DOCTYPE html><html><head><style>body{margin:0;font-family:Arial;background:#6c757d;color:white;padding:2rem;text-align:center;min-height:140px;display:flex;flex-direction:column;justify-content:center;}h2{margin-bottom:1rem;}.btn{background:#dc3545;padding:0.5rem 1rem;border:none;color:white;border-radius:4px;}</style></head><body><h2>Atelier Martin</h2><p>Artisan menuisier depuis 20 ans</p><button class='btn'>Mes créations</button></body></html>" style="width: 100%; height: 100%; border: none; transform: scale(0.9);"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3 class="template-title">Artisan / Services</h3>
+                            <p class="template-description">Mettez en valeur votre savoir-faire et vos réalisations</p>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card" data-template="professionnel">
+                        <div class="template-preview">
+                            <iframe srcdoc="<!DOCTYPE html><html><head><style>body{margin:0;font-family:Arial;background:#2c3e50;color:white;padding:2rem;text-align:center;min-height:140px;display:flex;flex-direction:column;justify-content:center;}h2{margin-bottom:1rem;}.btn{background:#3498db;padding:0.5rem 1rem;border:none;color:white;border-radius:4px;}</style></head><body><h2>Cabinet Conseil</h2><p>Expertise comptable et juridique</p><button class='btn'>Nous contacter</button></body></html>" style="width: 100%; height: 100%; border: none; transform: scale(0.9);"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3 class="template-title">Professionnel libéral</h3>
+                            <p class="template-description">Pour cabinets, consultants et professions libérales</p>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card" data-template="association">
+                        <div class="template-preview">
+                            <iframe srcdoc="<!DOCTYPE html><html><head><style>body{margin:0;font-family:Arial;background:#28a745;color:white;padding:2rem;text-align:center;min-height:140px;display:flex;flex-direction:column;justify-content:center;}h2{margin-bottom:1rem;}.btn{background:#17a2b8;padding:0.5rem 1rem;border:none;color:white;border-radius:4px;}</style></head><body><h2>Association Locale</h2><p>Ensemble pour notre communauté</p><button class='btn'>Nos actions</button></body></html>" style="width: 100%; height: 100%; border: none; transform: scale(0.9);"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3 class="template-title">Association / Événements</h3>
+                            <p class="template-description">Parfait pour associations, clubs et organisateurs d'événements</p>
+                        </div>
+                    </div>
+                    
+                    <div class="template-card" data-template="vitrine">
+                        <div class="template-preview">
+                            <iframe srcdoc="<!DOCTYPE html><html><head><style>body{margin:0;font-family:Arial;background:#6f42c1;color:white;padding:2rem;text-align:center;min-height:140px;display:flex;flex-direction:column;justify-content:center;}h2{margin-bottom:1rem;}.btn{background:#fd7e14;padding:0.5rem 1rem;border:none;color:white;border-radius:4px;}</style></head><body><h2>Mon Entreprise</h2><p>Présentation simple et efficace</p><button class='btn'>En savoir plus</button></body></html>" style="width: 100%; height: 100%; border: none; transform: scale(0.9);"></iframe>
+                        </div>
+                        <div class="template-info">
+                            <h3 class="template-title">Site vitrine simple</h3>
+                            <p class="template-description">Site basique pour présenter votre activité et vos coordonnées</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Étape 2: Couleurs -->
+            <div class="step-content" id="stepContent2">
+                <h2 class="section-title">Choisissez vos couleurs</h2>
+                <p class="text-muted">Sélectionnez la palette qui vous plaît le plus</p>
+                
+                <div class="color-grid">
+                    <div class="color-option" data-color="bleu">
+                        <div class="color-preview" style="background: linear-gradient(135deg, #007bff, #0056b3);"></div>
+                        <div class="color-name">Bleu professionnel</div>
+                    </div>
+                    
+                    <div class="color-option" data-color="vert">
+                        <div class="color-preview" style="background: linear-gradient(135deg, #28a745, #1e7e34);"></div>
+                        <div class="color-name">Vert nature</div>
+                    </div>
+                    
+                    <div class="color-option" data-color="rouge">
+                        <div class="color-preview" style="background: linear-gradient(135deg, #dc3545, #c82333);"></div>
+                        <div class="color-name">Rouge dynamique</div>
+                    </div>
+                    
+                    <div class="color-option" data-color="orange">
+                        <div class="color-preview" style="background: linear-gradient(135deg, #fd7e14, #e55a00);"></div>
+                        <div class="color-name">Orange chaleureux</div>
+                    </div>
+                    
+                    <div class="color-option" data-color="violet">
+                        <div class="color-preview" style="background: linear-gradient(135deg, #6f42c1, #5a32a3);"></div>
+                        <div class="color-name">Violet créatif</div>
+                    </div>
+                    
+                    <div class="color-option" data-color="gris">
+                        <div class="color-preview" style="background: linear-gradient(135deg, #6c757d, #495057);"></div>
+                        <div class="color-name">Gris moderne</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Étape 3: Options -->
+            <div class="step-content" id="stepContent3">
+                <h2 class="section-title">Options pour votre site</h2>
+                <p class="text-muted">Choisissez les fonctionnalités qui vous intéressent (optionnel)</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card" data-feature="contact">
+                        <div class="feature-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="feature-title">Formulaire de contact</div>
+                    </div>
+                    
+                    <div class="feature-card" data-feature="galerie">
+                        <div class="feature-icon"><i class="fas fa-images"></i></div>
+                        <div class="feature-title">Galerie photos</div>
+                    </div>
+                    
+                    <div class="feature-card" data-feature="horaires">
+                        <div class="feature-icon"><i class="fas fa-clock"></i></div>
+                        <div class="feature-title">Horaires d'ouverture</div>
+                    </div>
+                    
+                    <div class="feature-card" data-feature="localisation">
+                        <div class="feature-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="feature-title">Plan d'accès</div>
+                    </div>
+                    
+                    <div class="feature-card" data-feature="testimonials">
+                        <div class="feature-icon"><i class="fas fa-star"></i></div>
+                        <div class="feature-title">Avis clients</div>
+                    </div>
+                    
+                    <div class="feature-card" data-feature="reservation">
+                        <div class="feature-icon"><i class="fas fa-calendar"></i></div>
+                        <div class="feature-title">Prise de rendez-vous</div>
+                    </div>
+                    
+                    <div class="feature-card" data-feature="blog">
+                        <div class="feature-icon"><i class="fas fa-newspaper"></i></div>
+                        <div class="feature-title">Blog / Actualités</div>
+                    </div>
+                    
+                    <div class="feature-card" data-feature="reseaux">
+                        <div class="feature-icon"><i class="fas fa-share-alt"></i></div>
+                        <div class="feature-title">Réseaux sociaux</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Étape 4: Aperçu -->
+            <div class="step-content" id="stepContent4">
+                <h2 class="section-title">Aperçu de votre site</h2>
+                <p class="text-muted">Voici à quoi ressemblera votre site web</p>
+                
+                <div class="preview-container">
+                    <div class="preview-header">
+                        <i class="fas fa-globe me-2"></i>Aperçu de votre site web
+                    </div>
+                    <div id="finalPreview">
+                        <div class="text-center p-4">
+                            <i class="fas fa-spinner fa-spin fa-2x text-primary mb-3"></i>
+                            <p>Génération de l'aperçu en cours...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-custom btn-secondary-custom" id="prevBtn" disabled>
+                <i class="fas fa-arrow-left me-2"></i>Précédent
+            </button>
+            <button class="btn btn-custom btn-primary-custom" id="nextBtn">
+                Suivant<i class="fas fa-arrow-right ms-2"></i>
+            </button>
+            <button class="btn btn-custom btn-success-custom d-none" id="generateBtn">
+                <i class="fas fa-check me-2"></i>Créer mon site
+            </button>
+        </div>
+    </div>
+    
+    <div style="height: 3rem;"></div>
+    
+    <script src="./simple-generator.js"></script>
+</body>
+</html>

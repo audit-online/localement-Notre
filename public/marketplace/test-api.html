@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API - Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .test-result {
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .status-success { color: #28a745; }
+        .status-error { color: #dc3545; }
+        .status-pending { color: #ffc107; }
+        .status-info { color: #17a2b8; }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <div class="text-center mb-4">
+            <h1><i class="bi bi-gear-fill me-2"></i>🧪 MARKETPLACE API TESTER</h1>
+            <p class="lead">Serveur de test rapide pour valider toutes les fonctionnalités</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-play-circle me-2"></i>Tests API</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success btn-lg" onclick="testAllEndpoints()">
+                                <i class="bi bi-lightning me-2"></i>🚀 TESTER TOUT
+                            </button>
+                            <hr>
+                            <h6>Tests individuels:</h6>
+                            <button class="btn btn-outline-primary" onclick="testEndpoint('/merchants')">
+                                👥 Merchants
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="testEndpoint('/products')">
+                                📦 Products
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="testEndpoint('/categories')">
+                                📋 Categories
+                            </button>
+                            <button class="btn btn-outline-success" onclick="testEndpoint('/marketplace/home')">
+                                🏠 Home Page
+                            </button>
+                            <button class="btn btn-outline-success" onclick="testEndpoint('/marketplace/dashboard')">
+                                📊 Dashboard
+                            </button>
+                            <button class="btn btn-outline-info" onclick="testSearch()">
+                                🔍 Search Tests
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="testCreateMerchant()">
+                                ➕ Create Merchant
+                            </button>
+                            <hr>
+                            <button class="btn btn-outline-secondary" onclick="testFrontendPages()">
+                                🌐 Test Frontend
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="card mt-3 shadow">
+                    <div class="card-header bg-info text-white">
+                        <h6><i class="bi bi-link me-2"></i>Liens rapides</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-1">
+                            <a href="/" class="btn btn-sm btn-outline-primary" target="_blank">
+                                🏪 Marketplace
+                            </a>
+                            <a href="/admin" class="btn btn-sm btn-outline-success" target="_blank">
+                                ⚙️ Admin Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between">
+                        <h5><i class="bi bi-terminal me-2"></i>Console de test</h5>
+                        <button class="btn btn-sm btn-outline-light" onclick="clearResults()">
+                            <i class="bi bi-trash"></i> Clear
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="results" class="test-result p-3">
+                            <div class="status-success">✅ MARKETPLACE TEST SERVER READY</div>
+                            <div class="status-info">💡 Cliquez sur "🚀 TESTER TOUT" pour commencer</div>
+                            <div class="status-info">🌐 Serveur sur http://localhost:3000</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Status Cards -->
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="card text-center border-success shadow">
+                            <div class="card-body">
+                                <i class="bi bi-check-circle display-4 text-success"></i>
+                                <h3 id="successCount" class="text-success">0</h3>
+                                <small class="text-muted">Succès</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center border-danger shadow">
+                            <div class="card-body">
+                                <i class="bi bi-x-circle display-4 text-danger"></i>
+                                <h3 id="errorCount" class="text-danger">0</h3>
+                                <small class="text-muted">Erreurs</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center border-info shadow">
+                            <div class="card-body">
+                                <i class="bi bi-clock display-4 text-info"></i>
+                                <h3 id="totalTests" class="text-info">0</h3>
+                                <small class="text-muted">Total</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center border-warning shadow">
+                            <div class="card-body">
+                                <i class="bi bi-speedometer2 display-4 text-warning"></i>
+                                <h3 id="avgTime" class="text-warning">0ms</h3>
+                                <small class="text-muted">Temps moyen</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let successCount = 0;
+        let errorCount = 0;
+        let totalTests = 0;
+        let totalTime = 0;
+
+        function log(message, status = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const statusIcon = status === 'success' ? '✅' : status === 'error' ? '❌' : status === 'pending' ? '⏳' : 'ℹ️';
+            const statusClass = `status-${status}`;
+            
+            results.innerHTML += `<div class="${statusClass}">[${timestamp}] ${statusIcon} ${message}</div>`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function updateCounters() {
+            document.getElementById('successCount').textContent = successCount;
+            document.getElementById('errorCount').textContent = errorCount;
+            document.getElementById('totalTests').textContent = totalTests;
+            document.getElementById('avgTime').textContent = totalTests > 0 ? Math.round(totalTime / totalTests) + 'ms' : '0ms';
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = `
+                <div class="status-success">✅ CONSOLE CLEARED</div>
+                <div class="status-info">💡 Prêt pour de nouveaux tests</div>
+            `;
+            successCount = 0;
+            errorCount = 0;
+            totalTests = 0;
+            totalTime = 0;
+            updateCounters();
+        }
+
+        async function testEndpoint(endpoint, method = 'GET', data = null) {
+            totalTests++;
+            const startTime = Date.now();
+            log(`🔄 Testing ${method} ${endpoint}...`, 'pending');
+            
+            try {
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data && method !== 'GET') {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(`${API_BASE}${endpoint}`, options);
+                const result = await response.json();
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                totalTime += responseTime;
+                
+                if (response.ok) {
+                    successCount++;
+                    log(`✅ ${endpoint} - Status: ${response.status} (${responseTime}ms)`, 'success');
+                    
+                    if (result.data) {
+                        if (Array.isArray(result.data)) {
+                            log(`📦 Received ${result.data.length} items`, 'success');
+                            if (result.data.length > 0) {
+                                const sample = result.data[0];
+                                log(`📋 Sample: ${sample.name || sample.title || 'Item'} (ID: ${sample.id})`, 'info');
+                            }
+                        } else {
+                            log(`📦 Received object: ${result.data.name || result.data.title || 'Data'}`, 'success');
+                        }
+                    }
+                } else {
+                    errorCount++;
+                    log(`❌ ${endpoint} - Error: ${response.status} ${response.statusText}`, 'error');
+                    log(`📄 ${JSON.stringify(result)}`, 'error');
+                }
+            } catch (error) {
+                errorCount++;
+                const endTime = Date.now();
+                totalTime += (endTime - startTime);
+                log(`❌ ${endpoint} - Network Error: ${error.message}`, 'error');
+            }
+            
+            updateCounters();
+        }
+
+        async function testSearch() {
+            log('🔍 Testing search functionality...', 'info');
+            await testEndpoint('/marketplace/search?query=pain');
+            await testEndpoint('/marketplace/search?category=boulangerie');
+            await testEndpoint('/marketplace/search?city=paris');
+        }
+
+        async function testCreateMerchant() {
+            const newMerchant = {
+                name: "Test Merchant " + Date.now(),
+                description: "Merchant created by automated test",
+                address: "123 Test Street",
+                city: "Test City",
+                phone: "01 23 45 67 89",
+                email: "test@merchant.com"
+            };
+            
+            log('➕ Testing merchant creation...', 'info');
+            await testEndpoint('/merchants', 'POST', newMerchant);
+        }
+
+        async function testFrontendPages() {
+            log('🌐 Testing frontend pages...', 'info');
+            
+            const pages = [
+                { url: '/', name: 'Marketplace Home' },
+                { url: '/admin', name: 'Admin Dashboard' },
+                { url: '/test', name: 'Test Page' }
+            ];
+            
+            for (const page of pages) {
+                try {
+                    const response = await fetch(`http://localhost:3000${page.url}`);
+                    if (response.ok) {
+                        log(`✅ ${page.name} - Accessible`, 'success');
+                    } else {
+                        log(`❌ ${page.name} - Error ${response.status}`, 'error');
+                    }
+                } catch (error) {
+                    log(`❌ ${page.name} - ${error.message}`, 'error');
+                }
+            }
+        }
+
+        async function testAllEndpoints() {
+            clearResults();
+            log('🚀 STARTING COMPLETE API TEST SUITE', 'info');
+            log('=' .repeat(50), 'info');
+            
+            // Test basic endpoints
+            log('📋 Testing basic CRUD endpoints...', 'info');
+            await testEndpoint('/merchants');
+            await testEndpoint('/products');
+            await testEndpoint('/categories');
+            
+            // Test marketplace endpoints
+            log('🏪 Testing marketplace endpoints...', 'info');
+            await testEndpoint('/marketplace/home');
+            await testEndpoint('/marketplace/dashboard');
+            
+            // Test search functionality
+            await testSearch();
+            
+            // Test creation
+            await testCreateMerchant();
+            
+            // Test frontend
+            await testFrontendPages();
+            
+            log('=' .repeat(50), 'info');
+            log('🏁 TESTS COMPLETED!', 'info');
+            
+            const successRate = totalTests > 0 ? Math.round((successCount / totalTests) * 100) : 0;
+            log(`📊 RESULTS: ${successCount} success, ${errorCount} errors (${successRate}% success rate)`, 'info');
+            log(`⏱️  Average response time: ${totalTests > 0 ? Math.round(totalTime / totalTests) : 0}ms`, 'info');
+            
+            if (errorCount === 0) {
+                log('🎉 ALL TESTS PASSED! 🎉', 'success');
+            } else {
+                log(`⚠️  ${errorCount} tests failed - check errors above`, 'error');
+            }
+        }
+
+        // Auto-check server status on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            log('🌐 Page loaded, checking server status...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/merchants');
+                if (response.ok) {
+                    log('✅ Test server is running and responsive!', 'success');
+                    log('💡 Ready to run tests - click "🚀 TESTER TOUT"', 'info');
+                } else {
+                    log('⚠️  Server responded but with error status', 'error');
+                }
+            } catch (error) {
+                log('❌ Cannot connect to test server', 'error');
+                log('💡 Make sure to run: node test-server.js', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
+        }
+
+        function updateStatus(type, title, message) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `test-section ${type}`;
+            statusDiv.innerHTML = `<h3>${title}</h3><p>${message}</p>`;
+        }
+
+        async function testEndpoint(endpoint, name) {
+            const resultsDiv = document.getElementById('results');
+            const testDiv = document.createElement('div');
+            testDiv.className = 'test-section loading';
+            testDiv.id = `test-${name}`;
+            testDiv.innerHTML = `<h3>Testing ${name}...</h3><p>Calling ${endpoint}</p>`;
+            resultsDiv.appendChild(testDiv);
+
+            try {
+                const startTime = Date.now();
+                const response = await fetch(`${API_BASE}${endpoint}`);
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+
+                if (response.ok) {
+                    const data = await response.json();
+                    testDiv.className = 'test-section success';
+                    testDiv.innerHTML = `
+                        <h3>✅ ${name} - Success (${responseTime}ms)</h3>
+                        <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                        <p><strong>Endpoint:</strong> ${endpoint}</p>
+                        <details>
+                            <summary>Response Data</summary>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </details>
+                    `;
+                } else {
+                    testDiv.className = 'test-section error';
+                    testDiv.innerHTML = `
+                        <h3>❌ ${name} - Error (${responseTime}ms)</h3>
+                        <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                        <p><strong>Endpoint:</strong> ${endpoint}</p>
+                    `;
+                }
+            } catch (error) {
+                testDiv.className = 'test-section error';
+                testDiv.innerHTML = `
+                    <h3>❌ ${name} - Network Error</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Endpoint:</strong> ${endpoint}</p>
+                `;
+            }
+        }
+
+        async function testAll() {
+            document.getElementById('results').innerHTML = '';
+            const endpoints = [
+                ['/api/marketplace/home', 'home'],
+                ['/api/marketplace/dashboard', 'dashboard'],
+                ['/api/merchants', 'merchants'],
+                ['/api/products', 'products'],
+                ['/api/categories', 'categories']
+            ];
+
+            for (const [endpoint, name] of endpoints) {
+                await testEndpoint(endpoint, name);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Petit délai entre les tests
+            }
+        }
+
+        // Check status on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkStrapiStatus();
+            
+            // Re-check every 5 seconds if not running
+            setInterval(async () => {
+                const status = document.getElementById('status');
+                if (status.classList.contains('error') || status.classList.contains('loading')) {
+                    await checkStrapiStatus();
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

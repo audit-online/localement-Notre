@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Espace Client - Localement Vôtre</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            background: white;
+            padding: 2rem 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar li a:hover,
+        .sidebar li a.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .sidebar li a i {
+            margin-right: 0.5rem;
+            width: 20px;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .welcome-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .welcome-card h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-icon.orders { background: #4CAF50; }
+        .stat-icon.favorites { background: #2196F3; }
+        .stat-icon.spent { background: #FF9800; }
+        .stat-icon.points { background: #9C27B0; }
+
+        .data-table {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-content {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #FF9800;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.delivered {
+            background: #e8f5e8;
+            color: #4CAF50;
+        }
+
+        .status-badge.pending {
+            background: #fff3e0;
+            color: #FF9800;
+        }
+
+        .status-badge.shipped {
+            background: #e3f2fd;
+            color: #2196F3;
+        }
+
+        .merchant-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .merchant-info h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .merchant-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .favorite-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .favorite-card h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .favorite-card .price {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-user"></i>
+            Mon Espace Client
+        </div>
+        <div class="user-info">
+            <span id="userName">Client</span>
+            <a href="/marketplace/" class="btn btn-primary">
+                <i class="fas fa-store"></i>
+                Marketplace
+            </a>
+            <button class="btn btn-warning" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Déconnexion
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Tableau de bord
+                </a></li>
+                <li><a href="#orders" class="nav-link" data-section="orders">
+                    <i class="fas fa-shopping-bag"></i>
+                    Mes commandes
+                </a></li>
+                <li><a href="#favorites" class="nav-link" data-section="favorites">
+                    <i class="fas fa-heart"></i>
+                    Mes favoris
+                </a></li>
+                <li><a href="#merchants" class="nav-link" data-section="merchants">
+                    <i class="fas fa-store"></i>
+                    Mes commerçants
+                </a></li>
+                <li><a href="#profile" class="nav-link" data-section="profile">
+                    <i class="fas fa-user-edit"></i>
+                    Mon profil
+                </a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <!-- Dashboard -->
+            <div id="dashboard" class="section active">
+                <div class="welcome-card">
+                    <h1>Bienvenue <span id="userNameWelcome">!</span></h1>
+                    <p>Découvrez les meilleurs produits locaux et artisanaux de votre région</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon orders">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalOrders">0</h3>
+                            <p>Commandes passées</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon favorites">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalFavorites">0</h3>
+                            <p>Produits favoris</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon spent">
+                            <i class="fas fa-euro-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalSpent">0€</h3>
+                            <p>Total dépensé</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon points">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="loyaltyPoints">0</h3>
+                            <p>Points fidélité</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <h3><i class="fas fa-clock"></i> Commandes récentes</h3>
+                        <a href="#orders" class="btn btn-primary nav-link" data-section="orders">Voir tout</a>
+                    </div>
+                    <div class="table-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>N° Commande</th>
+                                    <th>Date</th>
+                                    <th>Commerçant</th>
+                                    <th>Total</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentOrders">
+                                <tr>
+                                    <td colspan="5" class="loading">
+                                        <div class="spinner"></div>
+                                        Chargement des commandes...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Commandes -->
+            <div id="orders" class="section">
+                <h2><i class="fas fa-shopping-bag"></i> Mes Commandes</h2>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <h3>Historique complet</h3>
+                        <input type="search" placeholder="Rechercher une commande..." id="ordersSearch">
+                    </div>
+                    <div class="table-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>N° Commande</th>
+                                    <th>Date</th>
+                                    <th>Commerçant</th>
+                                    <th>Produits</th>
+                                    <th>Total</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allOrders">
+                                <tr>
+                                    <td colspan="7" class="loading">
+                                        <div class="spinner"></div>
+                                        Chargement de l'historique...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favoris -->
+            <div id="favorites" class="section">
+                <h2><i class="fas fa-heart"></i> Mes Produits Favoris</h2>
+
+                <div class="favorites-grid" id="favoritesGrid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Chargement des favoris...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Commerçants -->
+            <div id="merchants" class="section">
+                <h2><i class="fas fa-store"></i> Mes Commerçants Favoris</h2>
+
+                <div id="merchantsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Chargement des commerçants...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profil -->
+            <div id="profile" class="section">
+                <h2><i class="fas fa-user-edit"></i> Mon Profil</h2>
+
+                <div class="alert" id="profileAlert"></div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <h3>Informations personnelles</h3>
+                    </div>
+                    <div style="padding: 2rem;">
+                        <form id="profileForm">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="firstName">Prénom</label>
+                                    <input type="text" id="firstName" name="firstName" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Nom</label>
+                                    <input type="text" id="lastName" name="lastName" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" name="email" class="form-control" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Téléphone</label>
+                                    <input type="tel" id="phone" name="phone" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Adresse</label>
+                                <textarea id="address" name="address" class="form-control" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i>
+                                Sauvegarder
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        class CustomerDashboard {
+            constructor() {
+                this.token = localStorage.getItem('auth_token');
+                this.user = JSON.parse(localStorage.getItem('user_data') || '{}');
+                this.orders = [];
+                this.favorites = [];
+                this.merchants = [];
+                
+                this.initializeApp();
+            }
+
+            async initializeApp() {
+                // Vérifier l'authentification
+                if (!this.token || this.user.role?.type !== 'customer') {
+                    window.location.href = '/marketplace/auth.html';
+                    return;
+                }
+
+                // Afficher le nom utilisateur
+                document.getElementById('userName').textContent = this.user.username || 'Client';
+                document.getElementById('userNameWelcome').textContent = this.user.firstName || this.user.username || '';
+
+                // Initialiser les événements
+                this.initializeEventListeners();
+
+                // Charger les données
+                await this.loadInitialData();
+            }
+
+            initializeEventListeners() {
+                // Navigation
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.showSection(link.dataset.section);
+                    });
+                });
+
+                // Formulaire profil
+                document.getElementById('profileForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.updateProfile();
+                });
+
+                // Recherche commandes
+                document.getElementById('ordersSearch')?.addEventListener('input', (e) => {
+                    this.filterOrders(e.target.value);
+                });
+            }
+
+            showSection(sectionId) {
+                // Masquer toutes les sections
+                document.querySelectorAll('.section').forEach(section => {
+                    section.style.display = 'none';
+                });
+
+                // Afficher la section demandée
+                document.getElementById(sectionId).style.display = 'block';
+
+                // Mettre à jour la navigation
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+
+                // Charger les données spécifiques à la section
+                switch(sectionId) {
+                    case 'orders':
+                        this.loadAllOrders();
+                        break;
+                    case 'favorites':
+                        this.loadFavorites();
+                        break;
+                    case 'merchants':
+                        this.loadMerchants();
+                        break;
+                    case 'profile':
+                        this.loadProfile();
+                        break;
+                }
+            }
+
+            async loadInitialData() {
+                try {
+                    await Promise.all([
+                        this.loadDashboardData(),
+                        this.loadRecentOrders()
+                    ]);
+                } catch (error) {
+                    console.error('Erreur chargement données initiales:', error);
+                }
+            }
+
+            async loadDashboardData() {
+                try {
+                    // Simulation de statistiques client
+                    const stats = {
+                        totalOrders: 12,
+                        totalFavorites: 8,
+                        totalSpent: 347.80,
+                        loyaltyPoints: 156
+                    };
+
+                    document.getElementById('totalOrders').textContent = stats.totalOrders;
+                    document.getElementById('totalFavorites').textContent = stats.totalFavorites;
+                    document.getElementById('totalSpent').textContent = `${stats.totalSpent}€`;
+                    document.getElementById('loyaltyPoints').textContent = stats.loyaltyPoints;
+
+                } catch (error) {
+                    console.error('Erreur chargement dashboard:', error);
+                }
+            }
+
+            async loadRecentOrders() {
+                try {
+                    // Simulation de commandes récentes
+                    const recentOrders = [
+                        {
+                            id: 'CMD001',
+                            date: new Date().toLocaleDateString(),
+                            merchant: 'Boulangerie Martin',
+                            total: 23.50,
+                            status: 'delivered'
+                        },
+                        {
+                            id: 'CMD002',
+                            date: new Date(Date.now() - 86400000).toLocaleDateString(),
+                            merchant: 'Boutique Clara',
+                            total: 89.90,
+                            status: 'shipped'
+                        },
+                        {
+                            id: 'CMD003',
+                            date: new Date(Date.now() - 172800000).toLocaleDateString(),
+                            merchant: 'Restaurant Le Bon Goût',
+                            total: 42.30,
+                            status: 'pending'
+                        }
+                    ];
+
+                    const tbody = document.getElementById('recentOrders');
+                    tbody.innerHTML = recentOrders.map(order => `
+                        <tr>
+                            <td>${order.id}</td>
+                            <td>${order.date}</td>
+                            <td>${order.merchant}</td>
+                            <td>${order.total}€</td>
+                            <td><span class="status-badge ${order.status}">${this.getStatusLabel(order.status)}</span></td>
+                        </tr>
+                    `).join('');
+
+                } catch (error) {
+                    console.error('Erreur chargement commandes récentes:', error);
+                }
+            }
+
+            async loadAllOrders() {
+                try {
+                    // Simulation de l'historique complet
+                    this.orders = [
+                        {
+                            id: 'CMD001',
+                            date: new Date().toLocaleDateString(),
+                            merchant: 'Boulangerie Martin',
+                            products: 'Pain, Croissants x3',
+                            total: 23.50,
+                            status: 'delivered'
+                        },
+                        {
+                            id: 'CMD002',
+                            date: new Date(Date.now() - 86400000).toLocaleDateString(),
+                            merchant: 'Boutique Clara',
+                            products: 'Robe artisanale',
+                            total: 89.90,
+                            status: 'shipped'
+                        },
+                        {
+                            id: 'CMD003',
+                            date: new Date(Date.now() - 172800000).toLocaleDateString(),
+                            merchant: 'Restaurant Le Bon Goût',
+                            products: 'Menu du jour x2',
+                            total: 42.30,
+                            status: 'pending'
+                        }
+                    ];
+
+                    this.renderOrders();
+
+                } catch (error) {
+                    console.error('Erreur chargement toutes commandes:', error);
+                }
+            }
+
+            renderOrders(filteredOrders = null) {
+                const ordersToRender = filteredOrders || this.orders;
+                const tbody = document.getElementById('allOrders');
+                
+                tbody.innerHTML = ordersToRender.map(order => `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>${order.date}</td>
+                        <td>${order.merchant}</td>
+                        <td>${order.products}</td>
+                        <td>${order.total}€</td>
+                        <td><span class="status-badge ${order.status}">${this.getStatusLabel(order.status)}</span></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="customerDashboard.viewOrder('${order.id}')">
+                                <i class="fas fa-eye"></i>
+                                Voir
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            filterOrders(searchTerm) {
+                const filtered = this.orders.filter(order => 
+                    order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    order.merchant.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    order.products.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                this.renderOrders(filtered);
+            }
+
+            async loadFavorites() {
+                try {
+                    // Simulation de produits favoris
+                    const favorites = [
+                        {
+                            id: 1,
+                            name: 'Pain de campagne',
+                            merchant: 'Boulangerie Martin',
+                            price: 4.50,
+                            image: '/uploads/images/pain-artisanal.svg'
+                        },
+                        {
+                            id: 2,
+                            name: 'Robe éthique',
+                            merchant: 'Boutique Clara',
+                            price: 89.90,
+                            image: '/uploads/images/robe-ethique.svg'
+                        },
+                        {
+                            id: 3,
+                            name: 'Café artisanal',
+                            merchant: 'Torréfacteur Local',
+                            price: 12.50,
+                            image: '/uploads/images/cafe-artisanal.svg'
+                        }
+                    ];
+
+                    const grid = document.getElementById('favoritesGrid');
+                    grid.innerHTML = favorites.map(product => `
+                        <div class="favorite-card">
+                            <h4>${product.name}</h4>
+                            <p>Par ${product.merchant}</p>
+                            <div class="price">${product.price}€</div>
+                            <button class="btn btn-primary" onclick="customerDashboard.addToCart(${product.id})">
+                                <i class="fas fa-cart-plus"></i>
+                                Ajouter au panier
+                            </button>
+                            <button class="btn btn-warning" onclick="customerDashboard.removeFavorite(${product.id})">
+                                <i class="fas fa-heart-broken"></i>
+                                Retirer
+                            </button>
+                        </div>
+                    `).join('');
+
+                } catch (error) {
+                    console.error('Erreur chargement favoris:', error);
+                }
+            }
+
+            async loadMerchants() {
+                try {
+                    // Simulation de commerçants favoris
+                    const merchants = [
+                        {
+                            id: 1,
+                            name: 'Boulangerie Martin',
+                            description: 'Pains et viennoiseries artisanales',
+                            visits: 8
+                        },
+                        {
+                            id: 2,
+                            name: 'Boutique Clara',
+                            description: 'Mode éthique et durable',
+                            visits: 3
+                        },
+                        {
+                            id: 3,
+                            name: 'Restaurant Le Bon Goût',
+                            description: 'Cuisine locale et bio',
+                            visits: 5
+                        }
+                    ];
+
+                    const list = document.getElementById('merchantsList');
+                    list.innerHTML = merchants.map(merchant => `
+                        <div class="merchant-card">
+                            <div class="merchant-info">
+                                <h3>${merchant.name}</h3>
+                                <p>${merchant.description}</p>
+                                <small>${merchant.visits} visites</small>
+                            </div>
+                            <div>
+                                <button class="btn btn-primary" onclick="customerDashboard.visitMerchant(${merchant.id})">
+                                    <i class="fas fa-store"></i>
+                                    Visiter
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+
+                } catch (error) {
+                    console.error('Erreur chargement commerçants:', error);
+                }
+            }
+
+            async loadProfile() {
+                try {
+                    // Charger les données du profil
+                    const response = await this.apiCall('/api/auth/me');
+                    const userData = response.user;
+
+                    // Pré-remplir le formulaire
+                    document.getElementById('firstName').value = userData.firstName || '';
+                    document.getElementById('lastName').value = userData.lastName || '';
+                    document.getElementById('email').value = userData.email || '';
+                    document.getElementById('phone').value = userData.phone || '';
+                    document.getElementById('address').value = userData.customer?.address || '';
+
+                } catch (error) {
+                    console.error('Erreur chargement profil:', error);
+                }
+            }
+
+            async updateProfile() {
+                try {
+                    const formData = new FormData(document.getElementById('profileForm'));
+                    const data = Object.fromEntries(formData.entries());
+
+                    const response = await this.apiCall('/api/auth/profile', 'PUT', data);
+
+                    this.showAlert('profileAlert', 'Profil mis à jour avec succès !', 'success');
+
+                    // Mettre à jour les données locales
+                    const updatedUser = { ...this.user, ...data };
+                    localStorage.setItem('user_data', JSON.stringify(updatedUser));
+                    this.user = updatedUser;
+
+                } catch (error) {
+                    console.error('Erreur mise à jour profil:', error);
+                    this.showAlert('profileAlert', 'Erreur lors de la mise à jour du profil', 'error');
+                }
+            }
+
+            viewOrder(orderId) {
+                alert(`Affichage du détail de la commande ${orderId}`);
+            }
+
+            addToCart(productId) {
+                alert(`Produit ${productId} ajouté au panier`);
+            }
+
+            removeFavorite(productId) {
+                alert(`Produit ${productId} retiré des favoris`);
+            }
+
+            visitMerchant(merchantId) {
+                window.location.href = `/marketplace/boutique-clara.html`;
+            }
+
+            showAlert(alertId, message, type) {
+                const alert = document.getElementById(alertId);
+                alert.className = `alert alert-${type}`;
+                alert.textContent = message;
+                alert.style.display = 'block';
+
+                if (type === 'success') {
+                    setTimeout(() => {
+                        alert.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            getStatusLabel(status) {
+                const labels = {
+                    'delivered': 'Livré',
+                    'shipped': 'Expédié',
+                    'pending': 'En attente',
+                    'cancelled': 'Annulé'
+                };
+                return labels[status] || status;
+            }
+
+            async apiCall(endpoint, method = 'GET', data = null) {
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.token}`
+                    }
+                };
+
+                if (data && method !== 'GET') {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(endpoint, options);
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                return await response.json();
+            }
+        }
+
+        // Fonction de déconnexion globale
+        function logout() {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_data');
+            window.location.href = '/marketplace/auth.html';
+        }
+
+        // Initialiser l'application
+        let customerDashboard;
+        document.addEventListener('DOMContentLoaded', () => {
+            customerDashboard = new CustomerDashboard();
+        });
+    </script>
+</body>
+</html>

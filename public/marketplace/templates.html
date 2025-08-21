@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogue Templates - Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .template-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .template-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .template-preview {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+        .template-category {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+        }
+        .template-rating {
+            color: #ffc107;
+        }
+        .filter-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 0;
+        }
+        .template-stats {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="bi bi-shop"></i> Marketplace Local</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#merchants">Commerçants</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#products">Produits</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#categories">Catégories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="templates.html"><i class="bi bi-palette"></i> Templates</a>
+                    </li>
+                </ul>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Rechercher..." id="navSearchInput">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="bi bi-palette me-3"></i>
+                        Catalogue de Templates
+                    </h1>
+                    <p class="lead mb-4">
+                        Créez votre site web professionnel en quelques clics avec nos templates optimisés pour commerçants et artisans locaux.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg" onclick="showFeatured()">
+                            <i class="bi bi-star-fill me-2"></i>
+                            Templates Vedettes
+                        </button>
+                        <button class="btn btn-outline-light btn-lg" onclick="showPopular()">
+                            <i class="bi bi-fire me-2"></i>
+                            Plus Populaires
+                        </button>
+                        <a href="template-creator-csp.html" class="btn btn-success btn-lg">
+                            <i class="bi bi-plus-circle me-2"></i>
+                            Créer un Template
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="bg-white bg-opacity-10 p-4 rounded-3">
+                        <h3 id="totalTemplates" class="display-6 fw-bold">150+</h3>
+                        <p class="mb-0">Templates Disponibles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Navigation & Filters -->
+    <section class="filter-section py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-outline-light active" onclick="filterByCategory('all')">
+                            Tous
+                        </button>
+                        <button class="btn btn-outline-light" onclick="filterByCategory('restaurant')">
+                            🍽️ Restaurant
+                        </button>
+                        <button class="btn btn-outline-light" onclick="filterByCategory('boulangerie')">
+                            🥖 Boulangerie
+                        </button>
+                        <button class="btn btn-outline-light" onclick="filterByCategory('commerce')">
+                            🛍️ Commerce
+                        </button>
+                        <button class="btn btn-outline-light" onclick="filterByCategory('artisanat')">
+                            🎨 Artisanat
+                        </button>
+                        <button class="btn btn-outline-light" onclick="filterByCategory('service')">
+                            ⚙️ Service
+                        </button>
+                        <button class="btn btn-outline-light" onclick="filterByCategory('beaute')">
+                            💄 Beauté
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un template..." onkeyup="searchTemplates()">
+                        <button class="btn btn-light" onclick="searchTemplates()">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates Grid -->
+    <section class="py-5">
+        <div class="container">
+            <!-- Loading -->
+            <div id="loading" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-3">Chargement des templates...</p>
+            </div>
+
+            <!-- Templates Grid -->
+            <div id="templatesGrid" class="row g-4 d-none">
+                <!-- Templates will be loaded here -->
+            </div>
+
+            <!-- No Results -->
+            <div id="noResults" class="text-center py-5 d-none">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h3 class="text-muted">Aucun template trouvé</h3>
+                <p class="text-muted">Essayez de modifier vos critères de recherche</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Template Preview Modal -->
+    <div class="modal fade" id="templateModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="templateModalTitle">Template Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="templateModalBody">
+                    <!-- Template details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-primary" id="downloadBtn">
+                        <i class="bi bi-download me-2"></i>Télécharger
+                    </button>
+                    <button type="button" class="btn btn-success" id="useTemplateBtn">
+                        <i class="bi bi-magic me-2"></i>Utiliser ce Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:1337/api';
+        let currentFilter = 'all';
+        let allTemplates = [];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTemplates();
+        });
+
+        // Charger tous les templates
+        async function loadTemplates() {
+            try {
+                showLoading(true);
+                const response = await fetch(`${API_URL}/templates?populate=*`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    allTemplates = result.data;
+                    displayTemplates(allTemplates);
+                    updateTotalCount(allTemplates.length);
+                } else {
+                    showError('Erreur lors du chargement des templates');
+                }
+            } catch (error) {
+                console.error('Error loading templates:', error);
+                showError('Impossible de charger les templates');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Afficher les templates
+        function displayTemplates(templates) {
+            const grid = document.getElementById('templatesGrid');
+            const noResults = document.getElementById('noResults');
+            
+            if (templates.length === 0) {
+                grid.classList.add('d-none');
+                noResults.classList.remove('d-none');
+                return;
+            }
+
+            noResults.classList.add('d-none');
+            grid.classList.remove('d-none');
+            
+            grid.innerHTML = templates.map(template => createTemplateCard(template)).join('');
+        }
+
+        // Créer une carte template
+        function createTemplateCard(template) {
+            const preview = template.previewImage?.url || 'https://via.placeholder.com/400x200?text=Preview';
+            const rating = template.rating || 0;
+            const downloadCount = template.downloadCount || 0;
+            const price = template.isFree ? 'Gratuit' : `${template.price}€`;
+
+            return `
+                <div class="col-lg-4 col-md-6">
+                    <div class="card template-card h-100" onclick="showTemplatePreview('${template.id}')">
+                        <div class="position-relative">
+                            <img src="${preview}" class="card-img-top template-preview" alt="${template.name}">
+                            <span class="template-category badge bg-primary">${getCategoryIcon(template.category)} ${template.category}</span>
+                            ${template.isFeatured ? '<span class="badge bg-warning position-absolute top-0 end-0 m-2">⭐ Vedette</span>' : ''}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${template.name}</h5>
+                            <p class="card-text text-muted">${template.description.substring(0, 100)}...</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="template-rating">
+                                    ${'★'.repeat(Math.floor(rating))}${'☆'.repeat(5-Math.floor(rating))}
+                                    <small class="text-muted">(${template.ratingCount || 0})</small>
+                                </div>
+                                <span class="badge bg-${template.isFree ? 'success' : 'warning'}">${price}</span>
+                            </div>
+                            
+                            <div class="template-stats d-flex justify-content-between">
+                                <small><i class="bi bi-download me-1"></i>${downloadCount} téléchargements</small>
+                                <small><i class="bi bi-code-square me-1"></i>${template.framework || 'HTML'}</small>
+                            </div>
+                            
+                            <div class="mt-3">
+                                ${template.responsive ? '<span class="badge bg-info me-1">📱 Responsive</span>' : ''}
+                                ${template.seoOptimized ? '<span class="badge bg-success me-1">🔍 SEO</span>' : ''}
+                                ${template.hasEcommerce ? '<span class="badge bg-primary me-1">🛒 E-commerce</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary btn-sm" onclick="event.stopPropagation(); showTemplatePreview('${template.id}')">
+                                    <i class="bi bi-eye me-2"></i>Aperçu
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Filtrer par catégorie
+        async function filterByCategory(category) {
+            currentFilter = category;
+            
+            // Update active button
+            document.querySelectorAll('.filter-section .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            showLoading(true);
+            
+            try {
+                let templates;
+                if (category === 'all') {
+                    templates = allTemplates;
+                } else {
+                    const response = await fetch(`${API_URL}/templates/category/${category}`);
+                    const result = await response.json();
+                    templates = result.data || [];
+                }
+                
+                displayTemplates(templates);
+            } catch (error) {
+                console.error('Error filtering templates:', error);
+                showError('Erreur lors du filtrage');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Rechercher templates
+        async function searchTemplates() {
+            const query = document.getElementById('searchInput').value.trim();
+            
+            if (query.length < 2 && query.length > 0) return;
+
+            showLoading(true);
+            
+            try {
+                const url = query ? 
+                    `${API_URL}/templates/search?query=${encodeURIComponent(query)}` : 
+                    `${API_URL}/templates?populate=*`;
+                    
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                const templates = result.data || [];
+                displayTemplates(templates);
+            } catch (error) {
+                console.error('Error searching templates:', error);
+                showError('Erreur lors de la recherche');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Afficher templates vedettes
+        async function showFeatured() {
+            showLoading(true);
+            try {
+                const response = await fetch(`${API_URL}/templates/featured`);
+                const result = await response.json();
+                displayTemplates(result.data || []);
+            } catch (error) {
+                showError('Erreur lors du chargement des templates vedettes');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Afficher templates populaires
+        async function showPopular() {
+            showLoading(true);
+            try {
+                const response = await fetch(`${API_URL}/templates/popular`);
+                const result = await response.json();
+                displayTemplates(result.data || []);
+            } catch (error) {
+                showError('Erreur lors du chargement des templates populaires');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Prévisualiser template
+        async function showTemplatePreview(templateId) {
+            try {
+                const response = await fetch(`${API_URL}/templates/${templateId}?populate=*`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const template = result.data;
+                    displayTemplateModal(template);
+                } else {
+                    showError('Template non trouvé');
+                }
+            } catch (error) {
+                console.error('Error loading template:', error);
+                showError('Erreur lors du chargement du template');
+            }
+        }
+
+        // Afficher modal template
+        function displayTemplateModal(template) {
+            document.getElementById('templateModalTitle').textContent = template.name;
+            
+            const modalBody = document.getElementById('templateModalBody');
+            modalBody.innerHTML = `
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="${template.previewImage?.url || 'https://via.placeholder.com/800x600'}" 
+                             class="img-fluid rounded" alt="${template.name}">
+                        
+                        ${template.screenshots?.length ? `
+                            <div class="mt-3">
+                                <h6>Screenshots supplémentaires:</h6>
+                                <div class="row g-2">
+                                    ${template.screenshots.map(img => `
+                                        <div class="col-4">
+                                            <img src="${img.url}" class="img-fluid rounded" alt="Screenshot">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="col-md-4">
+                        <h5>${template.name}</h5>
+                        <p class="text-muted">${template.description}</p>
+                        
+                        <div class="mb-3">
+                            <div class="template-rating mb-2">
+                                ${'★'.repeat(Math.floor(template.rating || 0))}${'☆'.repeat(5-Math.floor(template.rating || 0))}
+                                <small class="text-muted">(${template.ratingCount || 0} avis)</small>
+                            </div>
+                            <span class="badge bg-${template.isFree ? 'success' : 'warning'} fs-6">
+                                ${template.isFree ? 'Gratuit' : `${template.price}€`}
+                            </span>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Caractéristiques:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                ${template.responsive ? '<span class="badge bg-info">📱 Responsive</span>' : ''}
+                                ${template.seoOptimized ? '<span class="badge bg-success">🔍 SEO</span>' : ''}
+                                ${template.hasEcommerce ? '<span class="badge bg-primary">🛒 E-commerce</span>' : ''}
+                                ${template.hasBooking ? '<span class="badge bg-warning">📅 Réservation</span>' : ''}
+                                ${template.hasGallery ? '<span class="badge bg-info">🖼️ Galerie</span>' : ''}
+                                ${template.hasBlog ? '<span class="badge bg-secondary">📝 Blog</span>' : ''}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <strong>Framework:</strong> ${template.framework || 'HTML/CSS'}<br>
+                            <strong>Difficulté:</strong> ${template.difficulty || 'Facile'}<br>
+                            <strong>Licence:</strong> ${template.license || 'MIT'}
+                        </div>
+
+                        <div class="template-stats">
+                            <small><i class="bi bi-download me-1"></i>${template.downloadCount || 0} téléchargements</small><br>
+                            <small><i class="bi bi-people me-1"></i>${template.merchants?.length || 0} commerçants utilisent</small>
+                        </div>
+
+                        ${template.demoUrl ? `
+                            <div class="mt-3">
+                                <a href="${template.demoUrl}" target="_blank" class="btn btn-outline-primary">
+                                    <i class="bi bi-eye me-2"></i>Voir la démo
+                                </a>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+
+            // Configure download button
+            document.getElementById('downloadBtn').onclick = () => downloadTemplate(template.id);
+            document.getElementById('useTemplateBtn').onclick = () => useTemplate(template.id);
+
+            new bootstrap.Modal(document.getElementById('templateModal')).show();
+        }
+
+        // Télécharger template
+        async function downloadTemplate(templateId) {
+            try {
+                const response = await fetch(`${API_URL}/templates/${templateId}/download`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Créer un fichier zip ou afficher le code
+                    alert('Template téléchargé avec succès!');
+                    console.log('Template data:', result.data);
+                } else {
+                    showError('Erreur lors du téléchargement');
+                }
+            } catch (error) {
+                console.error('Error downloading template:', error);
+                showError('Erreur lors du téléchargement');
+            }
+        }
+
+        // Utiliser template (intégration future avec le builder)
+        function useTemplate(templateId) {
+            alert(`Redirection vers le builder avec le template ${templateId}`);
+            // TODO: Intégrer avec le site builder
+        }
+
+        // Utilitaires
+        function getCategoryIcon(category) {
+            const icons = {
+                restaurant: '🍽️',
+                boulangerie: '🥖', 
+                commerce: '🛍️',
+                artisanat: '🎨',
+                service: '⚙️',
+                beaute: '💄',
+                automobile: '🚗',
+                immobilier: '🏠',
+                sante: '🏥',
+                education: '📚'
+            };
+            return icons[category] || '📄';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('d-none', !show);
+            document.getElementById('templatesGrid').classList.toggle('d-none', show);
+        }
+
+        function showError(message) {
+            alert(message); // TODO: Remplacer par une notification toast
+        }
+
+        function updateTotalCount(count) {
+            document.getElementById('totalTemplates').textContent = count + '+';
+        }
+
+        // Search on Enter
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchTemplates();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+{
+  "kind": "collectionType",
+  "collectionName": "orders",
+  "info": {
+    "singularName": "order",
+    "pluralName": "orders",
+    "displayName": "Order",
+    "description": "Commandes des clients"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "orderNumber": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "confirmed", "preparing", "ready", "delivered", "cancelled"],
+      "default": "pending"
+    },
+    "totalAmount": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "deliveryFee": {
+      "type": "decimal",
+      "default": 0,
+      "min": 0
+    },
+    "customerName": {
+      "type": "string",
+      "required": true
+    },
+    "customerEmail": {
+      "type": "email",
+      "required": true
+    },
+    "customerPhone": {
+      "type": "string",
+      "required": true
+    },
+    "deliveryAddress": {
+      "type": "text"
+    },
+    "deliveryType": {
+      "type": "enumeration",
+      "enum": ["pickup", "delivery"],
+      "default": "pickup"
+    },
+    "deliveryDate": {
+      "type": "datetime"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": ["cash", "card", "online"],
+      "default": "cash"
+    },
+    "paymentStatus": {
+      "type": "enumeration",
+      "enum": ["pending", "paid", "failed", "refunded"],
+      "default": "pending"
+    },
+    "merchant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::merchant.merchant",
+      "inversedBy": "orders"
+    },
+    "orderItems": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order-item.order-item",
+      "mappedBy": "order"
+    }
+  }
+}

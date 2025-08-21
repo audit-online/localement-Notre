@@ -1,0 +1,16 @@
+{
+  "watchIgnoreFiles": [
+    "**/*.log",
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/build/**",
+    "**/.cache/**",
+    "**/tmp/**",
+    "**/.tmp/**",
+    "**/coverage/**",
+    "**/data/**",
+    "**/*.db",
+    "**/:memory:"
+  ]
+}

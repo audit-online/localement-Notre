@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace - Commerçants & Artisans Locaux</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 100px 0;
+        }
+        .merchant-card {
+            transition: transform 0.3s;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .merchant-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .product-card:hover {
+            transform: translateY(-3px);
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+        .category-badge:hover {
+            transform: scale(1.05);
+            color: white;
+        }
+        .stats-card {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="bi bi-shop"></i> Marketplace Local</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#merchants">Commerçants</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#products">Produits</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#categories">Catégories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="templates.html"><i class="bi bi-palette"></i> Templates</a>
+                    </li>
+                </ul>
+                <form class="d-flex" id="searchForm">
+                    <input class="form-control me-2" type="search" placeholder="Rechercher..." id="searchInput">
+                    <button class="btn btn-outline-light" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center" id="home">
+        <div class="container">
+            <h1 class="display-4 fw-bold mb-4">Marketplace Local</h1>
+            <p class="lead mb-4">Découvrez les commerçants et artisans de votre région</p>
+            <div class="row" id="statsContainer">
+                <!-- Les statistiques seront chargées ici -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="py-5" id="categories">
+        <div class="container">
+            <h2 class="text-center mb-4">Catégories</h2>
+            <div class="text-center" id="categoriesContainer">
+                <!-- Les catégories seront chargées ici -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates Section -->
+    <section class="py-5 bg-light" id="templates">
+        <div class="container">
+            <h2 class="text-center mb-4"><i class="bi bi-palette"></i> Templates de Site</h2>
+            <p class="text-center mb-4">Créez votre présence en ligne avec nos templates personnalisables</p>
+            <div class="row justify-content-center">
+                <div class="col-md-8 text-center">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+                            <i class="bi bi-brush display-4 text-primary mb-3"></i>
+                            <h3 class="card-title">Créateur de Templates</h3>
+                            <p class="card-text">Concevez facilement votre site web personnalisé avec notre outil intuitif</p>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                                <a href="templates.html" class="btn btn-primary btn-lg me-2">
+                                    <i class="bi bi-eye"></i> Voir les Templates
+                                </a>
+                                <a href="template-creator.html" class="btn btn-success btn-lg">
+                                    <i class="bi bi-plus-circle"></i> Créer un Template
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Merchants Section -->
+    <section class="py-5" id="merchants">
+        <div class="container">
+            <h2 class="text-center mb-4">Commerçants Récents</h2>
+            <div class="row" id="merchantsContainer">
+                <!-- Les commerçants seront chargés ici -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="py-5" id="products">
+        <div class="container">
+            <h2 class="text-center mb-4">Produits en Vedette</h2>
+            <div class="row" id="productsContainer">
+                <!-- Les produits seront chargés ici -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Results -->
+    <section class="py-5 d-none" id="searchResults">
+        <div class="container">
+            <h2 class="mb-4">Résultats de recherche</h2>
+            <div id="searchResultsContainer">
+                <!-- Les résultats de recherche seront affichés ici -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container text-center">
+            <p>&copy; 2025 Marketplace Local. Soutenir le commerce local.</p>
+            <p><small>Propulsé par Strapi V5</small></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:1337/api';
+
+        // Charger les données de la marketplace
+        async function loadMarketplaceData() {
+            try {
+                const response = await fetch(`${API_URL}/marketplace`);
+                if (!response.ok) throw new Error('Erreur réseau');
+                
+                const result = await response.json();
+                const data = result.data;
+
+                // Afficher les statistiques
+                displayStats(data.stats);
+                
+                // Afficher les catégories
+                displayCategories(data.categories);
+                
+                // Afficher les commerçants
+                displayMerchants(data.recentMerchants);
+                
+                // Afficher les produits
+                displayProducts(data.featuredProducts);
+                
+            } catch (error) {
+                console.error('Erreur lors du chargement:', error);
+                showError('Impossible de charger les données. Vérifiez que Strapi fonctionne.');
+            }
+        }
+
+        function displayStats(stats) {
+            const container = document.getElementById('statsContainer');
+            container.innerHTML = `
+                <div class="col-md-3 mb-3">
+                    <div class="card stats-card text-center p-3">
+                        <h3>${stats.totalMerchants}</h3>
+                        <p>Commerçants</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card stats-card text-center p-3">
+                        <h3>${stats.totalProducts}</h3>
+                        <p>Produits</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card stats-card text-center p-3">
+                        <h3>${stats.totalOrders}</h3>
+                        <p>Commandes</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card stats-card text-center p-3">
+                        <h3>${stats.totalCategories}</h3>
+                        <p>Catégories</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayCategories(categories) {
+            const container = document.getElementById('categoriesContainer');
+            if (!categories || categories.length === 0) {
+                container.innerHTML = '<p class="text-muted">Aucune catégorie disponible</p>';
+                return;
+            }
+            
+            container.innerHTML = categories.map(category => `
+                <span class="category-badge" style="background: ${category.color}">
+                    ${category.name}
+                </span>
+            `).join('');
+        }
+
+        function displayMerchants(merchants) {
+            const container = document.getElementById('merchantsContainer');
+            if (!merchants || merchants.length === 0) {
+                container.innerHTML = '<div class="col-12"><p class="text-center text-muted">Aucun commerçant disponible</p></div>';
+                return;
+            }
+            
+            container.innerHTML = merchants.map(merchant => `
+                <div class="col-md-4 mb-4">
+                    <div class="card merchant-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-shop-window me-2 text-primary"></i>
+                                <h5 class="card-title mb-0">${merchant.name}</h5>
+                            </div>
+                            <p class="card-text text-muted small">${merchant.city || 'Ville non spécifiée'}</p>
+                            <p class="card-text">${merchant.description || 'Aucune description'}</p>
+                            <span class="badge bg-primary">${merchant.businessType}</span>
+                            ${merchant.rating ? `<span class="badge bg-warning text-dark ms-2">${merchant.rating}/5 ⭐</span>` : ''}
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">
+                                <i class="bi bi-box me-1"></i>
+                                ${merchant.products ? merchant.products.length : 0} produits
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('productsContainer');
+            if (!products || products.length === 0) {
+                container.innerHTML = '<div class="col-12"><p class="text-center text-muted">Aucun produit en vedette</p></div>';
+                return;
+            }
+            
+            container.innerHTML = products.map(product => `
+                <div class="col-md-3 mb-4">
+                    <div class="card product-card h-100">
+                        <div class="card-body">
+                            <h6 class="card-title">${product.name}</h6>
+                            <p class="card-text text-muted small">${product.merchant ? product.merchant.name : 'Commerçant'}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-primary">${product.price}€</span>
+                                ${product.isFeatured ? '<span class="badge bg-success">Vedette</span>' : ''}
+                            </div>
+                            ${product.category ? `<small class="text-muted">${product.category.name}</small>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Gestion de la recherche
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value;
+            if (!query.trim()) return;
+
+            try {
+                const response = await fetch(`${API_URL}/marketplace/search?q=${encodeURIComponent(query)}`);
+                if (!response.ok) throw new Error('Erreur de recherche');
+                
+                const result = await response.json();
+                displaySearchResults(result.data, result.meta);
+                
+            } catch (error) {
+                console.error('Erreur de recherche:', error);
+                showError('Erreur lors de la recherche');
+            }
+        });
+
+        function displaySearchResults(results, meta) {
+            const section = document.getElementById('searchResults');
+            const container = document.getElementById('searchResultsContainer');
+            
+            section.classList.remove('d-none');
+            
+            container.innerHTML = `
+                <div class="mb-4">
+                    <h4>Recherche: "${meta.query}"</h4>
+                    <p class="text-muted">${meta.merchantsCount} commerçants, ${meta.productsCount} produits trouvés</p>
+                </div>
+                
+                ${results.merchants.length > 0 ? `
+                    <h5>Commerçants</h5>
+                    <div class="row mb-4">
+                        ${results.merchants.map(merchant => `
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>${merchant.name}</h6>
+                                        <p class="text-muted small">${merchant.city || ''}</p>
+                                        <span class="badge bg-primary">${merchant.businessType}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                
+                ${results.products.length > 0 ? `
+                    <h5>Produits</h5>
+                    <div class="row">
+                        ${results.products.map(product => `
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>${product.name}</h6>
+                                        <p class="text-muted small">${product.merchant ? product.merchant.name : ''}</p>
+                                        <span class="h6 text-primary">${product.price}€</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
+            
+            // Scroller vers les résultats
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            // Afficher l'erreur dans le container principal
+            const containers = ['statsContainer', 'categoriesContainer', 'merchantsContainer', 'productsContainer'];
+            containers.forEach(id => {
+                const container = document.getElementById(id);
+                if (container) {
+                    container.innerHTML = `<div class="col-12"><div class="alert alert-warning text-center">${message}</div></div>`;
+                }
+            });
+        }
+
+        // Charger les données au chargement de la page
+        document.addEventListener('DOMContentLoaded', loadMarketplaceData);
+    </script>
+</body>
+</html>

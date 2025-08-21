@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de Contact - Localement Vôtre</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #4ecdc4;
+            --accent-color: #ffe66d;
+            --purple-color: #a8e6cf;
+            --orange-color: #ff8b94;
+            --blue-color: #74b9ff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #74b9ff 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 3rem;
+            margin: 2rem auto;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .form-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 107, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .form-control::placeholder {
+            color: #adb5bd;
+        }
+
+        .btn-submit {
+            background: linear-gradient(45deg, var(--primary-color), var(--orange-color));
+            border: none;
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+            color: white;
+        }
+
+        .btn-back {
+            background: linear-gradient(45deg, var(--secondary-color), var(--blue-color));
+            border: none;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(78, 205, 196, 0.4);
+            color: white;
+        }
+
+        .contact-info {
+            background: linear-gradient(45deg, rgba(255,107,107,0.1), rgba(78,205,196,0.1));
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .contact-info h5 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .contact-item {
+            margin: 1rem 0;
+            color: #666;
+        }
+
+        .contact-item i {
+            color: var(--secondary-color);
+            margin-right: 0.5rem;
+            width: 20px;
+        }
+
+        .required {
+            color: var(--primary-color);
+        }
+
+        .floating-icons {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-icon:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; color: var(--primary-color); }
+        .floating-icon:nth-child(2) { top: 25%; right: 15%; animation-delay: 2s; color: var(--secondary-color); }
+        .floating-icon:nth-child(3) { top: 60%; left: 8%; animation-delay: 4s; color: var(--accent-color); }
+        .floating-icon:nth-child(4) { top: 75%; right: 12%; animation-delay: 6s; color: var(--orange-color); }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(180deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Icônes flottantes -->
+    <div class="floating-icons">
+        <i class="fas fa-store floating-icon"></i>
+        <i class="fas fa-handshake floating-icon"></i>
+        <i class="fas fa-heart floating-icon"></i>
+        <i class="fas fa-star floating-icon"></i>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <a href="index.html" class="btn-back">
+                <i class="fas fa-arrow-left me-2"></i>Retour à l'accueil
+            </a>
+
+            <h1 class="form-title">
+                <i class="fas fa-handshake me-3"></i>Rejoignez-nous !
+            </h1>
+            <p class="form-subtitle">
+                <strong>Vous êtes commerçant ou artisan ?</strong><br>
+                Remplissez ce formulaire et rejoignez la communauté "Localement Vôtre" !<br>
+                Nous vous contacterons rapidement pour vous accompagner.
+            </p>
+
+            <form id="contactForm" action="#" method="POST">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="firstName" class="form-label">
+                                <i class="fas fa-user me-2 text-primary"></i>Prénom <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Votre prénom" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="lastName" class="form-label">
+                                <i class="fas fa-user me-2 text-primary"></i>Nom <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Votre nom" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2 text-primary"></i>Email <span class="required">*</span>
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="votre@email.com" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="phone" class="form-label">
+                                <i class="fas fa-phone me-2 text-primary"></i>Téléphone <span class="required">*</span>
+                            </label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="06 12 34 56 78" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="businessName" class="form-label">
+                        <i class="fas fa-store me-2 text-primary"></i>Nom de votre commerce/atelier <span class="required">*</span>
+                    </label>
+                    <input type="text" class="form-control" id="businessName" name="businessName" placeholder="Le nom de votre entreprise" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="businessType" class="form-label">
+                                <i class="fas fa-tags me-2 text-primary"></i>Type d'activité <span class="required">*</span>
+                            </label>
+                            <select class="form-select" id="businessType" name="businessType" required>
+                                <option value="">Choisissez votre activité</option>
+                                <option value="restaurant">🍽️ Restaurant / Bar</option>
+                                <option value="commerce">🛍️ Commerce / Boutique</option>
+                                <option value="artisan">🔨 Artisan / Services</option>
+                                <option value="beaute">💄 Beauté / Bien-être</option>
+                                <option value="association">🎭 Association / Événements</option>
+                                <option value="professionnel">👔 Professionnel Libéral</option>
+                                <option value="autre">🌟 Autre (précisez ci-dessous)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="city" class="form-label">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>Ville <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="city" name="city" placeholder="Votre ville" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="address" class="form-label">
+                        <i class="fas fa-location-arrow me-2 text-primary"></i>Adresse complète
+                    </label>
+                    <input type="text" class="form-control" id="address" name="address" placeholder="Numéro, rue, code postal, ville">
+                </div>
+
+                <div class="form-group">
+                    <label for="website" class="form-label">
+                        <i class="fas fa-globe me-2 text-primary"></i>Site web actuel (si vous en avez un)
+                    </label>
+                    <input type="url" class="form-control" id="website" name="website" placeholder="https://votre-site.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="products" class="form-label">
+                        <i class="fas fa-box me-2 text-primary"></i>Décrivez vos produits/services <span class="required">*</span>
+                    </label>
+                    <textarea class="form-control" id="products" name="products" rows="4" placeholder="Décrivez ce que vous vendez, vos spécialités, vos services..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="goals" class="form-label">
+                        <i class="fas fa-target me-2 text-primary"></i>Vos objectifs avec "Localement Vôtre"
+                    </label>
+                    <textarea class="form-control" id="goals" name="goals" rows="3" placeholder="Qu'attendez-vous de notre plateforme ? Augmenter vos ventes, gagner en visibilité, toucher de nouveaux clients..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="message" class="form-label">
+                        <i class="fas fa-comment me-2 text-primary"></i>Message libre
+                    </label>
+                    <textarea class="form-control" id="message" name="message" rows="3" placeholder="Avez-vous des questions ou des demandes particulières ?"></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane me-2"></i>Envoyer ma demande
+                </button>
+            </form>
+
+            <div class="contact-info">
+                <h5><i class="fas fa-info-circle me-2"></i>Informations de contact</h5>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    contact@localement-votre.fr
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    01 23 45 67 89
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-clock"></i>
+                    Nous vous répondons sous 24h !
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-heart"></i>
+                    <strong>Rejoignez déjà 150+ commerçants satisfaits !</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animation des champs au focus
+        document.querySelectorAll('.form-control, .form-select').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentNode.style.transform = 'scale(1.02)';
+                this.parentNode.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentNode.style.transform = 'scale(1)';
+            });
+        });
+
+        // Validation et soumission du formulaire
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Animation de soumission
+            const submitBtn = document.querySelector('.btn-submit');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
+            submitBtn.disabled = true;
+            
+            // Simulation d'envoi (vous pouvez remplacer par votre logique d'envoi réelle)
+            setTimeout(() => {
+                submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Message envoyé !';
+                submitBtn.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                
+                // Redirection après 2 secondes
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+            }, 2000);
+        });
+
+        console.log('📋 Formulaire de contact "Localement Vôtre" prêt !');
+    </script>
+</body>
+</html>

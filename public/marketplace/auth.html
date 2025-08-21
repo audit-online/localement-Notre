@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <script src="/marketplace/auth.js"></script>
+            <!-- Formulaire d'Inscription -->
+            <div id="registerForm" style="display: none;">
+                <h2 class="auth-title">Inscription</h2>
+                <p class="auth-subtitle">Créez votre compte</p>
+
+                <form id="registerFormElement" onsubmit="return false;">
+                    <div class="role-selector">
+                        <div class="role-option active" data-role="customer">
+                            <i class="fas fa-shopping-bag"></i>
+                            <div>Client</div>
+                        </div>
+                        <div class="role-option" data-role="merchant">
+                            <i class="fas fa-store"></i>
+                            <div>Commerçant</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" class="form-control" name="username" placeholder="Nom d'utilisateur" required autocomplete="username">
+                    </div>
+
+                    <div class="form-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" class="form-control" name="email" placeholder="Email" required autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" class="form-control" name="password" placeholder="Mot de passe (min. 8 caractères)" required minlength="8" autocomplete="new-password">
+                    </div>
+
+                    <button type="button" class="btn" id="registerBtn">
+                        <i class="fas fa-user-plus"></i> Créer mon compte
+                    </button>
+                </form>
+
+                <div class="auth-switch">
+                    <span>Déjà un compte ? </span>
+                    <a href="#" id="showLogin">Se connecter</a>
+                </div>
+            </div>
+
+                        <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Traitement en cours...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script externe pour éviter les problèmes CSP -->
+    <script src="/marketplace/auth.js"></script>
+</body>
+</html>
+        </div>
+    </div>
+
+    <script>
+        class AuthManager {
+            constructor() {
+                this.initializeEventListeners();
+                this.selectedRole = 'customer';
+            }
+
+            initializeEventListeners() {
+                // Gestionnaires pour les boutons
+                const loginBtn = document.getElementById('loginBtn');
+                const registerBtn = document.getElementById('registerBtn');
+                
+                if (loginBtn) {
+                    loginBtn.addEventListener('click', () => {
+                        console.log('Bouton de connexion cliqué');
+                        this.handleLogin();
+                    });
+                }
+                
+                if (registerBtn) {
+                    registerBtn.addEventListener('click', () => {
+                        console.log('Bouton d\'inscription cliqué');
+                        this.handleRegister();
+                    });
+                }
+
+                // Basculer entre connexion et inscription
+                document.getElementById('showRegister').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showRegisterForm();
+                });
+
+                document.getElementById('showLogin').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showLoginForm();
+                });
+
+                // Sélection du rôle
+                document.querySelectorAll('.role-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        document.querySelectorAll('.role-option').forEach(o => o.classList.remove('active'));
+                        option.classList.add('active');
+                        this.selectedRole = option.dataset.role;
+                    });
+                });
+
+                // Soumission des formulaires
+                document.getElementById('loginFormElement').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleLogin();
+                });
+
+                document.getElementById('registerFormElement').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleRegister();
+                });
+
+                // Vérifier si déjà connecté
+                this.checkExistingAuth();
+            }
+
+            showRegisterForm() {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('registerForm').style.display = 'block';
+                this.hideAlert();
+            }
+
+            showLoginForm() {
+                document.getElementById('registerForm').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'block';
+                this.hideAlert();
+            }
+
+            showAlert(message, type = 'error') {
+                const alert = document.getElementById('alert');
+                alert.className = `alert alert-${type}`;
+                alert.textContent = message;
+                alert.style.display = 'block';
+            }
+
+            hideAlert() {
+                document.getElementById('alert').style.display = 'none';
+            }
+
+            showLoading() {
+                document.getElementById('loading').style.display = 'block';
+            }
+
+            hideLoading() {
+                document.getElementById('loading').style.display = 'none';
+            }
+
+            async handleLogin() {
+                console.log('🔐 handleLogin appelée');
+                try {
+                    this.showLoading();
+                    this.hideAlert();
+
+                    const formData = new FormData(document.getElementById('loginFormElement'));
+                    const data = {
+                        identifier: formData.get('identifier'),
+                        password: formData.get('password')
+                    };
+
+                    console.log('Données de connexion:', { identifier: data.identifier, password: '***' });
+
+                    if (!data.identifier || !data.password) {
+                        this.showAlert('Veuillez remplir tous les champs');
+                        return;
+                    }
+
+                    console.log('Envoi de la requête de connexion...');
+                    const response = await fetch('/api/auth/local', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    console.log('Réponse reçue:', response.status, response.statusText);
+                    const result = await response.json();
+                    console.log('Résultat:', result);
+
+                    if (response.ok) {
+                        // Stocker le token
+                        localStorage.setItem('auth_token', result.jwt);
+                        localStorage.setItem('user_data', JSON.stringify(result.user));
+
+                        this.showAlert('Connexion réussie ! Redirection...', 'success');
+                        
+                        // Rediriger selon le rôle
+                        setTimeout(() => {
+                            window.location.href = result.redirectUrl || '/marketplace/';
+                        }, 1500);
+
+                    } else {
+                        this.showAlert(result.error?.message || 'Erreur de connexion');
+                    }
+
+                } catch (error) {
+                    console.error('Erreur de connexion:', error);
+                    this.showAlert('Erreur de connexion au serveur');
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            async handleRegister() {
+                try {
+                    this.showLoading();
+                    this.hideAlert();
+
+                    const formData = new FormData(document.getElementById('registerFormElement'));
+                    const data = {
+                        username: formData.get('username'),
+                        email: formData.get('email'),
+                        password: formData.get('password'),
+                        userType: this.selectedRole
+                    };
+
+                    // Validation côté client
+                    if (data.password.length < 8) {
+                        this.showAlert('Le mot de passe doit contenir au moins 8 caractères');
+                        return;
+                    }
+
+                    const response = await fetch('/api/auth/local/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        // Stocker le token
+                        localStorage.setItem('auth_token', result.jwt);
+                        localStorage.setItem('user_data', JSON.stringify(result.user));
+
+                        this.showAlert('Inscription réussie ! Redirection...', 'success');
+                        
+                        // Rediriger selon le rôle
+                        setTimeout(() => {
+                            const role = result.user.role?.type;
+                            let redirectUrl = '/marketplace/';
+                            
+                            if (role === 'merchant') {
+                                redirectUrl = '/marketplace/merchant-dashboard.html';
+                            } else if (role === 'customer') {
+                                redirectUrl = '/marketplace/customer-dashboard.html';
+                            }
+                            
+                            window.location.href = redirectUrl;
+                        }, 1500);
+
+                    } else {
+                        this.showAlert(result.error?.message || 'Erreur lors de l\'inscription');
+                    }
+
+                } catch (error) {
+                    console.error('Erreur d\'inscription:', error);
+                    this.showAlert('Erreur de connexion au serveur');
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            checkExistingAuth() {
+                const token = localStorage.getItem('auth_token');
+                const userData = localStorage.getItem('user_data');
+
+                if (token && userData) {
+                    try {
+                        const user = JSON.parse(userData);
+                        const role = user.role?.type;
+
+                        // Rediriger automatiquement si déjà connecté
+                        let redirectUrl = '/marketplace/';
+                        
+                        switch (role) {
+                            case 'super-admin':
+                                redirectUrl = '/marketplace/platform-admin.html';
+                                break;
+                            case 'commercial':
+                                redirectUrl = '/marketplace/commercial-dashboard.html';
+                                break;
+                            case 'merchant':
+                                redirectUrl = '/marketplace/merchant-dashboard.html';
+                                break;
+                            case 'customer':
+                                redirectUrl = '/marketplace/customer-dashboard.html';
+                                break;
+                        }
+
+                        // Vérifier si le token est encore valide
+                        fetch('/api/auth/me', {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        }).then(response => {
+                            if (response.ok) {
+                                window.location.href = redirectUrl;
+                            } else {
+                                // Token expiré, le supprimer
+                                localStorage.removeItem('auth_token');
+                                localStorage.removeItem('user_data');
+                            }
+                        });
+
+                    } catch (error) {
+                        console.error('Erreur parsing user data:', error);
+                        localStorage.removeItem('auth_token');
+                        localStorage.removeItem('user_data');
+                    }
+                }
+            }
+        }
+
+        // Variable globale pour l'authentification
+        window.authManager = null;
+
+        // Initialiser l'authentification
+        document.addEventListener('DOMContentLoaded', () => {
+            window.authManager = new AuthManager();
+            console.log('AuthManager initialisé:', window.authManager);
+        });
+    </script>
+</body>
+</html>

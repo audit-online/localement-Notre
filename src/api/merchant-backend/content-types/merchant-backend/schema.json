@@ -1,0 +1,84 @@
+{
+  "kind": "collectionType",
+  "collectionName": "merchant_backends",
+  "info": {
+    "singularName": "merchant-backend",
+    "pluralName": "merchant-backends",
+    "displayName": "Merchant Backend",
+    "description": "Backends individuels des commerçants"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "merchant": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::merchant.merchant",
+      "mappedBy": "backend"
+    },
+    "subdomain": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "customDomain": {
+      "type": "string",
+      "unique": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["deploying", "active", "suspended", "maintenance", "error"],
+      "default": "deploying"
+    },
+    "template": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::template.template"
+    },
+    "databaseUrl": {
+      "type": "string",
+      "private": true
+    },
+    "apiEndpoint": {
+      "type": "string"
+    },
+    "adminUrl": {
+      "type": "string"
+    },
+    "storageUsed": {
+      "type": "biginteger",
+      "default": 0
+    },
+    "lastBackup": {
+      "type": "datetime"
+    },
+    "configuration": {
+      "type": "json"
+    },
+    "environmentVariables": {
+      "type": "json",
+      "private": true
+    },
+    "deploymentLogs": {
+      "type": "text"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "isSSLEnabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "lastHealthCheck": {
+      "type": "datetime"
+    },
+    "healthStatus": {
+      "type": "enumeration",
+      "enum": ["healthy", "warning", "critical"],
+      "default": "healthy"
+    }
+  }
+}

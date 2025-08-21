@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic des Rôles - Localement Vôtre</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .diagnostic-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .diagnostic-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .test-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .test-button:hover {
+            background: #5a6fd8;
+        }
+        
+        .test-button.success {
+            background: #28a745;
+        }
+        
+        .test-button.error {
+            background: #dc3545;
+        }
+        
+        .result {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .role-card {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .role-card h4 {
+            color: #0c5460;
+            margin-top: 0;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #0c5460;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #856404;
+        }
+        
+        .admin-link {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        
+        .admin-link:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnostic des Rôles Utilisateurs</h1>
+        
+        <div class="info">
+            <strong>ℹ️ Information :</strong> Cette page permet de diagnostiquer les rôles créés dans votre système Strapi et de tester les fonctionnalités d'authentification.
+        </div>
+        
+        <div class="diagnostic-section">
+            <h3>🎭 1. Vérification des Rôles Disponibles</h3>
+            <p>Vérifions quels rôles sont actuellement disponibles dans le système.</p>
+            
+            <button class="test-button" onclick="checkRoles()">Vérifier les Rôles</button>
+            <button class="test-button" onclick="checkRolesAdmin()">Vérifier via Admin</button>
+            
+            <div id="roles-result" class="result" style="display: none;"></div>
+            
+            <div class="info">
+                <strong>Rôles attendus :</strong>
+                <ul>
+                    <li><strong>Public</strong> - Accès public (par défaut Strapi)</li>
+                    <li><strong>Authenticated</strong> - Utilisateurs authentifiés (par défaut Strapi)</li>
+                    <li><strong>Super Admin</strong> - Administrateurs de la plateforme</li>
+                    <li><strong>Commercial</strong> - Équipe commerciale et onboarding</li>
+                    <li><strong>Merchant</strong> - Propriétaires de boutiques</li>
+                    <li><strong>Customer</strong> - Clients de la marketplace</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="diagnostic-section">
+            <h3>👤 2. Test de Création d'Utilisateur</h3>
+            <p>Testons la création d'utilisateurs avec différents rôles.</p>
+            
+            <button class="test-button" onclick="testCreateUser('customer')">Créer Client</button>
+            <button class="test-button" onclick="testCreateUser('merchant')">Créer Commerçant</button>
+            <button class="test-button" onclick="testCreateUserBasic()">Créer Utilisateur Basique</button>
+            
+            <div id="create-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="diagnostic-section">
+            <h3>🔑 3. Test de Connexion</h3>
+            <p>Testons la connexion avec des comptes existants.</p>
+            
+            <button class="test-button" onclick="testLogin('test@example.com', 'TestPassword123!')">Test Connexion Basique</button>
+            <button class="test-button" onclick="checkExistingUsers()">Vérifier Utilisateurs Existants</button>
+            
+            <div id="login-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="diagnostic-section">
+            <h3>⚙️ 4. Configuration Manuelle</h3>
+            <p>Si les rôles ne sont pas créés automatiquement, vous pouvez les créer manuellement.</p>
+            
+            <a href="http://localhost:1337/admin" target="_blank" class="admin-link">
+                🚀 Ouvrir Admin Strapi
+            </a>
+            
+            <div class="warning">
+                <strong>📝 Instructions pour créer les rôles manuellement :</strong>
+                <ol>
+                    <li>Allez dans l'admin Strapi : <strong>Settings → Users & Permissions Plugin → Roles</strong></li>
+                    <li>Cliquez sur <strong>Add new role</strong></li>
+                    <li>Créez chaque rôle avec les informations suivantes :</li>
+                </ol>
+            </div>
+            
+            <div class="role-card">
+                <h4>🔹 Super Admin</h4>
+                <strong>Name:</strong> Super Admin<br>
+                <strong>Description:</strong> Accès complet à toute la plateforme<br>
+                <strong>Type:</strong> super-admin
+            </div>
+            
+            <div class="role-card">
+                <h4>🔹 Commercial</h4>
+                <strong>Name:</strong> Commercial<br>
+                <strong>Description:</strong> Équipe commerciale et onboarding<br>
+                <strong>Type:</strong> commercial
+            </div>
+            
+            <div class="role-card">
+                <h4>🔹 Merchant</h4>
+                <strong>Name:</strong> Merchant<br>
+                <strong>Description:</strong> Propriétaires de boutiques<br>
+                <strong>Type:</strong> merchant
+            </div>
+            
+            <div class="role-card">
+                <h4>🔹 Customer</h4>
+                <strong>Name:</strong> Customer<br>
+                <strong>Description:</strong> Clients de la marketplace<br>
+                <strong>Type:</strong> customer
+            </div>
+        </div>
+        
+        <div class="diagnostic-section">
+            <h3>🧪 5. Test Complet du Système</h3>
+            <p>Une fois les rôles créés, testez le système complet.</p>
+            
+            <a href="http://localhost:1337/marketplace/auth.html" target="_blank" class="admin-link">
+                🔑 Page d'Authentification
+            </a>
+            
+            <a href="http://localhost:1337/marketplace/test-auth.html" target="_blank" class="admin-link">
+                🧪 Page de Test
+            </a>
+        </div>
+    </div>
+
+    <script>
+        async function checkRoles() {
+            try {
+                // Essayer différentes URLs pour récupérer les rôles
+                const urls = [
+                    '/api/users-permissions/roles',
+                    '/admin/users-permissions/roles',
+                    '/api/roles'
+                ];
+                
+                let result = null;
+                let successUrl = null;
+                
+                for (const url of urls) {
+                    try {
+                        const response = await fetch(url);
+                        if (response.ok) {
+                            result = await response.json();
+                            successUrl = url;
+                            break;
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+                
+                if (result) {
+                    showResult('roles-result', {
+                        success: true,
+                        message: `Rôles récupérés via ${successUrl}`,
+                        data: result
+                    });
+                } else {
+                    showResult('roles-result', {
+                        success: false,
+                        message: 'Impossible d\'accéder aux rôles via l\'API',
+                        suggestion: 'Vérifiez les rôles manuellement dans l\'admin Strapi'
+                    });
+                }
+            } catch (error) {
+                showResult('roles-result', {
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        
+        async function checkRolesAdmin() {
+            showResult('roles-result', {
+                message: 'Pour vérifier les rôles via l\'admin Strapi :',
+                instructions: [
+                    '1. Ouvrez http://localhost:1337/admin',
+                    '2. Allez dans Settings → Users & Permissions Plugin → Roles',
+                    '3. Vérifiez la liste des rôles disponibles',
+                    '4. Notez leurs types et descriptions'
+                ]
+            });
+        }
+        
+        async function testCreateUser(userType) {
+            try {
+                const userData = {
+                    username: `test${userType}${Date.now()}`,
+                    email: `test${userType}@example.com`,
+                    password: 'TestPassword123!',
+                    userType: userType
+                };
+                
+                const response = await fetch('/api/auth/local/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const result = await response.json();
+                
+                showResult('create-result', {
+                    status: response.status,
+                    success: response.ok,
+                    userData: userData,
+                    data: result
+                });
+                
+            } catch (error) {
+                showResult('create-result', {
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        
+        async function testCreateUserBasic() {
+            try {
+                // Test avec l'API Strapi standard
+                const userData = {
+                    username: `testuser${Date.now()}`,
+                    email: `testuser${Date.now()}@example.com`,
+                    password: 'TestPassword123!'
+                };
+                
+                const response = await fetch('/api/users-permissions/auth/local/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const result = await response.json();
+                
+                showResult('create-result', {
+                    status: response.status,
+                    success: response.ok,
+                    message: 'Test avec API Strapi standard',
+                    userData: userData,
+                    data: result
+                });
+                
+            } catch (error) {
+                showResult('create-result', {
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        
+        async function testLogin(email, password) {
+            try {
+                const response = await fetch('/api/auth/local', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        identifier: email,
+                        password: password
+                    })
+                });
+                
+                const result = await response.json();
+                
+                showResult('login-result', {
+                    status: response.status,
+                    success: response.ok,
+                    data: result
+                });
+                
+            } catch (error) {
+                showResult('login-result', {
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        
+        async function checkExistingUsers() {
+            showResult('login-result', {
+                message: 'Pour vérifier les utilisateurs existants :',
+                instructions: [
+                    '1. Ouvrez http://localhost:1337/admin',
+                    '2. Allez dans Content Manager → User (from: users-permissions)',
+                    '3. Consultez la liste des utilisateurs créés',
+                    '4. Notez leurs emails et rôles assignés'
+                ]
+            });
+        }
+        
+        function showResult(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = JSON.stringify(data, null, 2);
+            
+            // Mettre à jour la couleur des boutons
+            const section = element.parentElement;
+            const buttons = section.querySelectorAll('.test-button');
+            buttons.forEach(btn => {
+                btn.classList.remove('success', 'error');
+                if (data.success === true) {
+                    btn.classList.add('success');
+                } else if (data.success === false) {
+                    btn.classList.add('error');
+                }
+            });
+        }
+        
+        // Auto-test au chargement
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                checkRoles();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

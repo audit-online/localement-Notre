@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Bouton</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test du Système d'Authentification</h1>
+        <p>Page de diagnostic pour tester le bouton de connexion</p>
+        
+        <form id="testLoginForm">
+            <input type="email" id="email" placeholder="Email" value="test@test.com">
+            <input type="password" id="password" placeholder="Mot de passe" value="test123">
+        </form>
+        
+        <button onclick="testLogin()">🔐 Test Connexion</button>
+        <button onclick="testAPI()">🌐 Test API</button>
+        <button onclick="clearLog()">🗑️ Effacer le log</button>
+        
+        <div id="log" class="log">Log des événements...\n</div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = 'Log effacé...\n';
+        }
+
+        async function testAPI() {
+            log('🌐 Test de l\'API...');
+            try {
+                const response = await fetch('/api/users-permissions/auth/local', {
+                    method: 'OPTIONS'
+                });
+                log(`✅ API accessible, status: ${response.status}`);
+            } catch (error) {
+                log(`❌ Erreur API: ${error.message}`);
+            }
+        }
+
+        async function testLogin() {
+            log('🔐 Début du test de connexion...');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            log(`📧 Email: ${email}`);
+            log(`🔑 Mot de passe: ${password ? '***' : 'vide'}`);
+            
+            if (!email || !password) {
+                log('❌ Champs manquants');
+                return;
+            }
+
+            try {
+                log('📡 Envoi de la requête...');
+                
+                const data = {
+                    identifier: email,
+                    password: password
+                };
+                
+                log(`📦 Données envoyées: ${JSON.stringify({identifier: email, password: '***'})}`);
+                
+                const response = await fetch('/api/auth/local', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                log(`📥 Réponse reçue - Status: ${response.status} ${response.statusText}`);
+                
+                const result = await response.json();
+                log(`📋 Résultat: ${JSON.stringify(result, null, 2)}`);
+                
+                if (response.ok) {
+                    log('✅ Connexion réussie !');
+                    if (result.jwt) {
+                        log('🎟️ Token JWT reçu');
+                        localStorage.setItem('test_token', result.jwt);
+                    }
+                } else {
+                    log(`❌ Échec de connexion: ${result.error?.message || 'Erreur inconnue'}`);
+                }
+                
+            } catch (error) {
+                log(`💥 Erreur JS: ${error.message}`);
+                console.error('Erreur complète:', error);
+            }
+        }
+
+        // Test initial
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Page chargée, prête pour les tests');
+            testAPI();
+        });
+    </script>
+</body>
+</html>

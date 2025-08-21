@@ -1,0 +1,90 @@
+{
+  "kind": "collectionType",
+  "collectionName": "subscription_plans",
+  "info": {
+    "singularName": "subscription-plan",
+    "pluralName": "subscription-plans",
+    "displayName": "Subscription Plan",
+    "description": "Plans d'abonnement pour les commerçants"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "currency": {
+      "type": "string",
+      "default": "EUR"
+    },
+    "billingPeriod": {
+      "type": "enumeration",
+      "enum": ["monthly", "quarterly", "yearly"],
+      "default": "monthly"
+    },
+    "trialDays": {
+      "type": "integer",
+      "default": 0
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "features": {
+      "type": "json"
+    },
+    "maxProducts": {
+      "type": "integer",
+      "default": -1
+    },
+    "maxOrders": {
+      "type": "integer",
+      "default": -1
+    },
+    "maxStorage": {
+      "type": "integer",
+      "default": -1
+    },
+    "customDomain": {
+      "type": "boolean",
+      "default": false
+    },
+    "advancedAnalytics": {
+      "type": "boolean",
+      "default": false
+    },
+    "prioritySupport": {
+      "type": "boolean",
+      "default": false
+    },
+    "subscriptions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::subscription.subscription",
+      "mappedBy": "plan"
+    },
+    "stripePriceId": {
+      "type": "string",
+      "unique": true
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "kind": "collectionType",
+  "collectionName": "support_tickets",
+  "info": {
+    "singularName": "support-ticket",
+    "pluralName": "support-tickets",
+    "displayName": "Support Ticket",
+    "description": "Tickets de support technique"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "ticketNumber": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "richtext",
+      "required": true
+    },
+    "merchant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::merchant.merchant",
+      "inversedBy": "supportTickets"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": ["technical", "billing", "account", "feature_request", "bug_report", "other"],
+      "default": "other"
+    },
+    "priority": {
+      "type": "enumeration",
+      "enum": ["low", "medium", "high", "urgent"],
+      "default": "medium"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["open", "in_progress", "waiting_customer", "resolved", "closed"],
+      "default": "open"
+    },
+    "assignedTo": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "admin::user"
+    },
+    "responses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::ticket-response.ticket-response",
+      "mappedBy": "ticket"
+    },
+    "attachments": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images", "files"]
+    },
+    "resolvedAt": {
+      "type": "datetime"
+    },
+    "firstResponseAt": {
+      "type": "datetime"
+    },
+    "lastActivityAt": {
+      "type": "datetime"
+    },
+    "customerEmail": {
+      "type": "email"
+    },
+    "tags": {
+      "type": "json"
+    }
+  }
+}

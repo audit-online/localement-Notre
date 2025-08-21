@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Marketplace Locale</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .stat-card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .activity-item {
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 15px;
+            background: white;
+            border-radius: 0 8px 8px 0;
+        }
+        .merchant-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .nav-link {
+            color: white !important;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.2);
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <div class="text-center mb-4">
+                    <h4 class="text-white">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        Admin Panel
+                    </h4>
+                </div>
+                
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="#dashboard" data-section="dashboard">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        Dashboard
+                    </a>
+                    <a class="nav-link" href="#merchants" data-section="merchants">
+                        <i class="bi bi-shop me-2"></i>
+                        Commerçants
+                    </a>
+                    <a class="nav-link" href="#products" data-section="products">
+                        <i class="bi bi-box me-2"></i>
+                        Produits
+                    </a>
+                    <a class="nav-link" href="#orders" data-section="orders">
+                        <i class="bi bi-cart-check me-2"></i>
+                        Commandes
+                    </a>
+                    <a class="nav-link" href="#analytics" data-section="analytics">
+                        <i class="bi bi-graph-up me-2"></i>
+                        Analytiques
+                    </a>
+                    <a class="nav-link" href="#settings" data-section="settings">
+                        <i class="bi bi-gear me-2"></i>
+                        Paramètres
+                    </a>
+                </nav>
+
+                <div class="mt-auto pt-4">
+                    <div class="text-center">
+                        <a href="/admin" class="btn btn-outline-light btn-sm">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Retour Strapi
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content p-4">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="content-section">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Dashboard Marketplace</h2>
+                        <button class="btn btn-primary" id="refreshData">
+                            <i class="bi bi-arrow-clockwise me-2"></i>
+                            Actualiser
+                        </button>
+                    </div>
+
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4" id="statsCards">
+                        <!-- Cards will be loaded here -->
+                    </div>
+
+                    <div class="row">
+                        <!-- Recent Activity -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card stat-card h-100">
+                                <div class="card-header bg-transparent">
+                                    <h5>
+                                        <i class="bi bi-activity text-primary me-2"></i>
+                                        Activité Récente
+                                    </h5>
+                                </div>
+                                <div class="card-body" id="recentActivity">
+                                    <!-- Activity will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Top Merchants -->
+                        <div class="col-lg-6 mb-4">
+                            <div class="card stat-card h-100">
+                                <div class="card-header bg-transparent">
+                                    <h5>
+                                        <i class="bi bi-trophy text-warning me-2"></i>
+                                        Top Commerçants
+                                    </h5>
+                                </div>
+                                <div class="card-body" id="topMerchants">
+                                    <!-- Top merchants will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="row">
+                        <div class="col-lg-8 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-header bg-transparent">
+                                    <h5>
+                                        <i class="bi bi-graph-up text-success me-2"></i>
+                                        Évolution des Ventes
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="salesChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 mb-4">
+                            <div class="card stat-card">
+                                <div class="card-header bg-transparent">
+                                    <h5>
+                                        <i class="bi bi-pie-chart text-info me-2"></i>
+                                        Catégories
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="categoriesChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other sections will be added here -->
+                <div id="merchants-section" class="content-section d-none">
+                    <h2>Gestion des Commerçants</h2>
+                    <p>Section en cours de développement...</p>
+                </div>
+
+                <div id="products-section" class="content-section d-none">
+                    <h2>Gestion des Produits</h2>
+                    <p>Section en cours de développement...</p>
+                </div>
+
+                <div id="orders-section" class="content-section d-none">
+                    <h2>Gestion des Commandes</h2>
+                    <p>Section en cours de développement...</p>
+                </div>
+
+                <div id="analytics-section" class="content-section d-none">
+                    <h2>Analytiques Avancées</h2>
+                    <p>Section en cours de développement...</p>
+                </div>
+
+                <div id="settings-section" class="content-section d-none">
+                    <h2>Paramètres</h2>
+                    <p>Section en cours de développement...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:1337/api';
+        let salesChart, categoriesChart;
+
+        // Navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            
+            // Navigation entre sections
+            document.querySelectorAll('[data-section]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.dataset.section;
+                    showSection(section);
+                    
+                    // Update active nav
+                    document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Refresh button
+            document.getElementById('refreshData').addEventListener('click', loadDashboard);
+        });
+
+        function showSection(sectionName) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('d-none');
+            });
+            document.getElementById(sectionName + '-section').classList.remove('d-none');
+        }
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_URL}/marketplace/dashboard`);
+                if (!response.ok) throw new Error('Erreur réseau');
+                
+                const result = await response.json();
+                const data = result.data;
+
+                displayStats(data.overview);
+                displayRecentActivity(data.recentActivity);
+                displayTopMerchants(data.topMerchants);
+                createSalesChart();
+                createCategoriesChart(data.categoryStats);
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showError('Impossible de charger les données du dashboard');
+            }
+        }
+
+        function displayStats(overview) {
+            const container = document.getElementById('statsCards');
+            container.innerHTML = `
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-shop display-4 text-primary mb-3"></i>
+                            <h3 class="text-primary">${overview.activeMerchants || 0}</h3>
+                            <p class="text-muted mb-0">Commerçants Actifs</p>
+                            <small class="text-success">+${overview.totalMerchants - overview.activeMerchants || 0} en attente</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-box display-4 text-success mb-3"></i>
+                            <h3 class="text-success">${overview.totalProducts || 0}</h3>
+                            <p class="text-muted mb-0">Produits</p>
+                            <small class="text-info">En ligne</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-cart-check display-4 text-warning mb-3"></i>
+                            <h3 class="text-warning">${overview.totalOrders || 0}</h3>
+                            <p class="text-muted mb-0">Commandes</p>
+                            <small class="text-success">Total</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-currency-euro display-4 text-danger mb-3"></i>
+                            <h3 class="text-danger">${overview.monthlyRevenue?.currentMonth?.toFixed(2) || '0.00'}€</h3>
+                            <p class="text-muted mb-0">CA Mensuel</p>
+                            <small class="text-success">+${overview.monthlyRevenue?.growth || 0}%</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayRecentActivity(activities) {
+            const container = document.getElementById('recentActivity');
+            if (!activities || activities.length === 0) {
+                container.innerHTML = '<p class="text-muted">Aucune activité récente</p>';
+                return;
+            }
+
+            container.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="d-flex align-items-center">
+                        <i class="bi ${activity.type === 'new_merchant' ? 'bi-shop' : 'bi-box'} text-primary me-3"></i>
+                        <div class="flex-grow-1">
+                            <strong>${activity.type === 'new_merchant' ? 'Nouveau commerçant' : 'Nouveau produit'}</strong>
+                            <p class="mb-0 text-muted">${activity.data.name}</p>
+                            <small class="text-muted">${new Date(activity.timestamp).toLocaleDateString('fr-FR')}</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayTopMerchants(merchants) {
+            const container = document.getElementById('topMerchants');
+            if (!merchants || merchants.length === 0) {
+                container.innerHTML = '<p class="text-muted">Aucun commerçant</p>';
+                return;
+            }
+
+            container.innerHTML = merchants.map((merchant, index) => `
+                <div class="merchant-item">
+                    <div class="d-flex align-items-center">
+                        <div class="badge bg-primary me-3">${index + 1}</div>
+                        <div class="flex-grow-1">
+                            <strong>${merchant.name}</strong>
+                            <p class="mb-0 text-muted small">${merchant.city || ''}</p>
+                            <div class="d-flex align-items-center">
+                                <span class="text-warning me-2">★</span>
+                                <span class="small">${merchant.rating || 'N/A'}</span>
+                                <span class="text-muted small ms-2">(${merchant.products?.length || 0} produits)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function createSalesChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            
+            if (salesChart) salesChart.destroy();
+            
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+                    datasets: [{
+                        label: 'Ventes (€)',
+                        data: [1200, 1900, 3000, 5000, 4200, 3200],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createCategoriesChart(categoryStats) {
+            const ctx = document.getElementById('categoriesChart').getContext('2d');
+            
+            if (categoriesChart) categoriesChart.destroy();
+            
+            const data = categoryStats || [
+                { name: 'Commerce', productCount: 25, color: '#FF6384' },
+                { name: 'Artisanat', productCount: 15, color: '#36A2EB' },
+                { name: 'Service', productCount: 10, color: '#FFCE56' },
+                { name: 'Restauration', productCount: 8, color: '#4BC0C0' }
+            ];
+            
+            categoriesChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(cat => cat.name),
+                    datasets: [{
+                        data: data.map(cat => cat.productCount),
+                        backgroundColor: data.map(cat => cat.color || '#999'),
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function showError(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show';
+            alert.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.main-content').insertBefore(alert, document.querySelector('.main-content').firstChild);
+        }
+    </script>
+</body>
+</html>

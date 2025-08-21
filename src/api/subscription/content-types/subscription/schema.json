@@ -1,0 +1,79 @@
+{
+  "kind": "collectionType",
+  "collectionName": "subscriptions",
+  "info": {
+    "singularName": "subscription",
+    "pluralName": "subscriptions",
+    "displayName": "Subscription",
+    "description": "Gestion des abonnements des commerçants"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "merchant": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::merchant.merchant",
+      "mappedBy": "subscription"
+    },
+    "plan": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subscription-plan.subscription-plan",
+      "inversedBy": "subscriptions"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["active", "inactive", "suspended", "cancelled", "pending"],
+      "default": "pending"
+    },
+    "startDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "endDate": {
+      "type": "datetime"
+    },
+    "nextBillingDate": {
+      "type": "datetime"
+    },
+    "amount": {
+      "type": "decimal",
+      "required": true
+    },
+    "currency": {
+      "type": "string",
+      "default": "EUR"
+    },
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": ["stripe", "paypal", "bank_transfer", "cheque"],
+      "default": "stripe"
+    },
+    "stripeSubscriptionId": {
+      "type": "string",
+      "unique": true
+    },
+    "trialEndDate": {
+      "type": "datetime"
+    },
+    "cancelledAt": {
+      "type": "datetime"
+    },
+    "cancellationReason": {
+      "type": "text"
+    },
+    "autoRenew": {
+      "type": "boolean",
+      "default": true
+    },
+    "invoices": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::invoice.invoice",
+      "mappedBy": "subscription"
+    }
+  }
+}

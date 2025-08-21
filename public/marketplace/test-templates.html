@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Templates API</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .template { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; }
+        .error { color: red; }
+        .success { color: green; }
+        button { margin: 5px; padding: 10px 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Test API Templates</h1>
+    
+    <div>
+        <button onclick="testAPI()">Test Connection API</button>
+        <button onclick="createSampleTemplate()">Créer Template Exemple</button>
+        <button onclick="loadTemplates()">Charger Templates</button>
+        <button onclick="testSearch()">Test Recherche</button>
+    </div>
+    
+    <div id="status"></div>
+    <div id="results"></div>
+
+    <script>
+        const API_URL = 'http://localhost:1337/api';
+        
+        async function testAPI() {
+            const status = document.getElementById('status');
+            status.innerHTML = 'Test de connexion...';
+            
+            try {
+                const response = await fetch(`${API_URL}/templates`);
+                if (response.ok) {
+                    const data = await response.json();
+                    status.innerHTML = `<span class="success">✅ API connectée - ${data.data?.length || 0} templates trouvés</span>`;
+                } else {
+                    status.innerHTML = `<span class="error">❌ Erreur: ${response.status}</span>`;
+                }
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Erreur de connexion: ${error.message}</span>`;
+            }
+        }
+        
+        async function createSampleTemplate() {
+            const status = document.getElementById('status');
+            status.innerHTML = 'Création template exemple...';
+            
+            const sampleTemplate = {
+                name: "Restaurant Test",
+                description: "Template de test pour restaurant",
+                category: "restaurant",
+                framework: "Bootstrap 5",
+                difficulty: "Facile",
+                isFree: true,
+                isFeatured: false,
+                responsive: true,
+                seoOptimized: true,
+                hasBooking: true,
+                hasGallery: true,
+                hasBlog: false,
+                hasEcommerce: false,
+                license: "MIT",
+                rating: 4.5,
+                ratingCount: 10,
+                downloadCount: 25
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/templates`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ data: sampleTemplate })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    status.innerHTML = `<span class="success">✅ Template créé: ${result.data.name}</span>`;
+                } else {
+                    const error = await response.text();
+                    status.innerHTML = `<span class="error">❌ Erreur création: ${error}</span>`;
+                }
+            } catch (error) {
+                status.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
+            }
+        }
+        
+        async function loadTemplates() {
+            const results = document.getElementById('results');
+            results.innerHTML = 'Chargement des templates...';
+            
+            try {
+                const response = await fetch(`${API_URL}/templates?populate=*`);
+                const data = await response.json();
+                
+                if (response.ok && data.data) {
+                    results.innerHTML = `
+                        <h3>Templates (${data.data.length}):</h3>
+                        ${data.data.map(template => `
+                            <div class="template">
+                                <h4>${template.name}</h4>
+                                <p><strong>Catégorie:</strong> ${template.category}</p>
+                                <p><strong>Description:</strong> ${template.description}</p>
+                                <p><strong>Framework:</strong> ${template.framework}</p>
+                                <p><strong>Prix:</strong> ${template.isFree ? 'Gratuit' : template.price + '€'}</p>
+                                <p><strong>Rating:</strong> ${template.rating}/5 (${template.ratingCount} avis)</p>
+                                <p><strong>Téléchargements:</strong> ${template.downloadCount}</p>
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    results.innerHTML = '<span class="error">❌ Aucun template trouvé</span>';
+                }
+            } catch (error) {
+                results.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
+            }
+        }
+        
+        async function testSearch() {
+            const results = document.getElementById('results');
+            results.innerHTML = 'Test de recherche...';
+            
+            try {
+                const response = await fetch(`${API_URL}/templates/search?query=restaurant`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    results.innerHTML = `
+                        <h3>Résultats recherche "restaurant" (${data.data?.length || 0}):</h3>
+                        ${data.data?.map(template => `
+                            <div class="template">
+                                <h4>${template.name}</h4>
+                                <p>${template.description}</p>
+                            </div>
+                        `).join('') || 'Aucun résultat'}
+                    `;
+                } else {
+                    results.innerHTML = '<span class="error">❌ Erreur recherche</span>';
+                }
+            } catch (error) {
+                results.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>`;
+            }
+        }
+        
+        // Test automatique au chargement
+        document.addEventListener('DOMContentLoaded', testAPI);
+    </script>
+</body>
+</html>

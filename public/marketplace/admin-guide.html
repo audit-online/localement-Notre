@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide de Création Super Admin - Localement Vôtre</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .step h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .admin-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        
+        .admin-button:hover {
+            background: #218838;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #856404;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #155724;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #0c5460;
+        }
+        
+        .account-info {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        ol {
+            line-height: 1.6;
+        }
+        
+        ol li {
+            margin-bottom: 10px;
+        }
+        
+        .screenshot {
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 10px 0;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔑 Guide de Création du Compte Super Admin</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Problème identifié :</strong> L'API d'inscription n'est pas accessible publiquement (ce qui est normal pour la sécurité). Nous allons créer le compte super admin via l'interface admin de Strapi.
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">1</span>Accéder à l'Admin Strapi</h3>
+            <p>Première étape : accéder à l'interface d'administration de Strapi.</p>
+            
+            <a href="http://localhost:1337/admin" target="_blank" class="admin-button">
+                🚀 Ouvrir Admin Strapi
+            </a>
+            
+            <div class="info">
+                <strong>Si c'est votre première visite :</strong><br>
+                Vous serez invité à créer votre compte administrateur principal. Ce sera votre "super admin" de la plateforme.
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">2</span>Créer des Utilisateurs via Content Manager</h3>
+            <p>Une fois connecté à l'admin, nous allons créer des utilisateurs de test.</p>
+            
+            <div class="info">
+                <strong>Navigation dans Strapi Admin :</strong>
+                <ol>
+                    <li>Dans le menu de gauche, cliquez sur <span class="highlight">Content Manager</span></li>
+                    <li>Dans la section "COLLECTION TYPES", trouvez <span class="highlight">User (from: users-permissions)</span></li>
+                    <li>Cliquez dessus pour voir la liste des utilisateurs</li>
+                    <li>Cliquez sur le bouton <span class="highlight">Create new entry</span> en haut à droite</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">3</span>Créer le Compte Super Admin</h3>
+            <p>Créons notre premier utilisateur de test avec les privilèges super admin.</p>
+            
+            <div class="account-info">
+                <strong>Informations à saisir :</strong><br><br>
+                <strong>Username:</strong> superadmin<br>
+                <strong>Email:</strong> admin@localement-votre.fr<br>
+                <strong>Password:</strong> Admin123!<br>
+                <strong>Confirmed:</strong> ✅ true (coché)<br>
+                <strong>Blocked:</strong> ❌ false (non coché)<br>
+                <strong>Role:</strong> Authenticated<br>
+                <strong>Provider:</strong> local
+            </div>
+            
+            <div class="info">
+                <strong>Champs optionnels :</strong>
+                <ul>
+                    <li><strong>firstName:</strong> Super</li>
+                    <li><strong>lastName:</strong> Admin</li>
+                    <li>Vous pouvez laisser les autres champs vides</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">4</span>Créer des Utilisateurs de Test</h3>
+            <p>Créons quelques utilisateurs de test pour chaque rôle.</p>
+            
+            <div class="account-info">
+                <strong>Client Test :</strong><br>
+                Username: testcustomer<br>
+                Email: customer@test.fr<br>
+                Password: Customer123!<br>
+                Role: Authenticated
+            </div>
+            
+            <div class="account-info">
+                <strong>Commerçant Test :</strong><br>
+                Username: testmerchant<br>
+                Email: merchant@test.fr<br>
+                Password: Merchant123!<br>
+                Role: Authenticated
+            </div>
+            
+            <div class="account-info">
+                <strong>Commercial Test :</strong><br>
+                Username: testcommercial<br>
+                Email: commercial@test.fr<br>
+                Password: Commercial123!<br>
+                Role: Authenticated
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">5</span>Tester la Connexion</h3>
+            <p>Une fois les comptes créés, testons la connexion avec notre système d'authentification.</p>
+            
+            <a href="http://localhost:1337/marketplace/auth.html" target="_blank" class="admin-button">
+                🔑 Tester la Connexion
+            </a>
+            
+            <div class="info">
+                <strong>Test recommandé :</strong>
+                <ol>
+                    <li>Essayez de vous connecter avec <code>admin@localement-votre.fr</code> / <code>Admin123!</code></li>
+                    <li>Vérifiez que la redirection fonctionne vers le bon dashboard</li>
+                    <li>Testez la déconnexion</li>
+                    <li>Répétez avec les autres comptes de test</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">6</span>Configuration Avancée (Optionnel)</h3>
+            <p>Pour une configuration plus poussée, vous pouvez créer des rôles personnalisés.</p>
+            
+            <div class="info">
+                <strong>Pour créer des rôles personnalisés :</strong>
+                <ol>
+                    <li>Dans l'admin Strapi, allez dans <span class="highlight">Settings</span></li>
+                    <li>Sous "USERS & PERMISSIONS PLUGIN", cliquez sur <span class="highlight">Roles</span></li>
+                    <li>Cliquez sur <span class="highlight">Add new role</span></li>
+                    <li>Créez les rôles : Super Admin, Commercial, Merchant, Customer</li>
+                    <li>Configurez les permissions pour chaque rôle</li>
+                </ol>
+            </div>
+        </div>
+        
+        <div class="success">
+            <strong>✅ Une fois terminé :</strong><br>
+            Vous aurez un système d'authentification pleinement fonctionnel avec :
+            <ul>
+                <li>✅ Comptes utilisateurs créés</li>
+                <li>✅ Connexion/déconnexion opérationnelle</li>
+                <li>✅ Dashboards accessibles selon les rôles</li>
+                <li>✅ API d'authentification fonctionnelle</li>
+            </ul>
+            
+            <br><strong>🎯 Prochaines étapes :</strong>
+            <ul>
+                <li>Tester toutes les fonctionnalités d'authentification</li>
+                <li>Personnaliser les dashboards selon vos besoins</li>
+                <li>Configurer les permissions avancées</li>
+                <li>Ajouter du contenu à votre marketplace</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "customers",
+  "info": {
+    "singularName": "customer",
+    "pluralName": "customers",
+    "displayName": "Customer",
+    "description": "Profils clients étendus"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "firstName": {
+      "type": "string",
+      "required": true
+    },
+    "lastName": {
+      "type": "string",
+      "required": true
+    },
+    "phone": {
+      "type": "string"
+    },
+    "birthDate": {
+      "type": "date"
+    },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "addresses": {
+      "type": "json"
+    },
+    "preferences": {
+      "type": "json"
+    },
+    "newsletterSubscribed": {
+      "type": "boolean",
+      "default": false
+    },
+    "loyaltyPoints": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
+    },
+    "totalSpent": {
+      "type": "decimal",
+      "default": 0,
+      "min": 0
+    },
+    "lastLoginDate": {
+      "type": "datetime"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

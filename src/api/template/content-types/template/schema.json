@@ -1,0 +1,213 @@
+{
+  "kind": "collectionType",
+  "collectionName": "marketplace_templates",
+  "info": {
+    "singularName": "template",
+    "pluralName": "templates",
+    "displayName": "Template",
+    "description": "Templates de sites web pour commerçants et artisans"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "restaurant",
+        "boulangerie",
+        "commerce",
+        "artisanat",
+        "service",
+        "beaute",
+        "automobile",
+        "immobilier",
+        "sante",
+        "education",
+        "general"
+      ],
+      "required": true,
+      "default": "general"
+    },
+    "subcategory": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "previewImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "screenshots": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "templateCode": {
+      "type": "richtext",
+      "required": true
+    },
+    "cssCode": {
+      "type": "text",
+      "required": false
+    },
+    "jsCode": {
+      "type": "text",
+      "required": false
+    },
+    "demoUrl": {
+      "type": "string",
+      "required": false
+    },
+    "downloadUrl": {
+      "type": "string",
+      "required": false
+    },
+    "githubUrl": {
+      "type": "string",
+      "required": false
+    },
+    "price": {
+      "type": "decimal",
+      "required": false,
+      "default": 0
+    },
+    "isFree": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "isPremium": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "difficulty": {
+      "type": "enumeration",
+      "enum": ["facile", "moyen", "avance"],
+      "required": true,
+      "default": "facile"
+    },
+    "features": {
+      "type": "json",
+      "required": false
+    },
+    "requirements": {
+      "type": "json",
+      "required": false
+    },
+    "tags": {
+      "type": "json",
+      "required": false
+    },
+    "author": {
+      "type": "string",
+      "required": false
+    },
+    "authorUrl": {
+      "type": "string",
+      "required": false
+    },
+    "license": {
+      "type": "enumeration",
+      "enum": ["MIT", "GPL", "Apache", "Commercial", "CC", "Proprietary"],
+      "required": false,
+      "default": "MIT"
+    },
+    "framework": {
+      "type": "enumeration",
+      "enum": ["vanilla", "bootstrap", "tailwind", "bulma", "foundation", "materialize"],
+      "required": false,
+      "default": "bootstrap"
+    },
+    "responsive": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "seoOptimized": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "hasEcommerce": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "hasBooking": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "hasContact": {
+      "type": "boolean",
+      "required": false,
+      "default": true
+    },
+    "hasGallery": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "hasBlog": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "isMultilingual": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "downloadCount": {
+      "type": "integer",
+      "required": false,
+      "default": 0
+    },
+    "rating": {
+      "type": "decimal",
+      "required": false,
+      "min": 0,
+      "max": 5
+    },
+    "ratingCount": {
+      "type": "integer",
+      "required": false,
+      "default": 0
+    },
+    "merchants": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::merchant.merchant",
+      "mappedBy": "templates"
+    },
+    "sortOrder": {
+      "type": "integer",
+      "required": false,
+      "default": 0
+    },
+    "isFeatured": {
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    "isActive": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    }
+  }
+}

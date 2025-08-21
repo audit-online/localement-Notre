@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Platform - Localement Vôtre</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .test-result {
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #1a1a1a;
+            color: #00ff00;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .status-success { color: #28a745; }
+        .status-error { color: #dc3545; }
+        .status-pending { color: #ffc107; }
+        .status-info { color: #17a2b8; }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">🧪 Test API Platform</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <button class="btn btn-primary me-2" onclick="testCreatePlan()">Créer Plan Starter</button>
+                            <button class="btn btn-secondary me-2" onclick="testCreateMerchant()">Créer Commerçant</button>
+                            <button class="btn btn-info me-2" onclick="testDashboard()">Test Dashboard</button>
+                            <button class="btn btn-warning" onclick="clearResults()">Clear</button>
+                        </div>
+                        
+                        <div class="test-result" id="results">
+                            📋 Prêt pour les tests...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:1337/api';
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = `status-${type}`;
+            results.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '📋 Résultats effacés...';
+        }
+
+        async function testCreatePlan() {
+            log('🚀 Test création plan Starter...', 'info');
+            
+            try {
+                const planData = {
+                    data: {
+                        name: 'Starter',
+                        slug: 'starter',
+                        description: 'Parfait pour débuter votre activité en ligne',
+                        price: 19.99,
+                        currency: 'EUR',
+                        billingPeriod: 'monthly',
+                        trialDays: 14,
+                        isActive: true,
+                        features: {
+                            maxProducts: 50,
+                            maxOrders: 100,
+                            storage: '1GB'
+                        },
+                        maxProducts: 50,
+                        maxOrders: 100,
+                        maxStorage: 1024,
+                        sortOrder: 1
+                    }
+                };
+
+                const response = await fetch(`${API_URL}/subscription-plans`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(planData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    log(`✅ Plan créé: ${result.data.name} (${result.data.price}€)`, 'success');
+                } else {
+                    const error = await response.text();
+                    log(\`❌ Erreur \${response.status}: \${error}\`, 'error');
+                }
+            } catch (error) {
+                log(\`❌ Erreur réseau: \${error.message}\`, 'error');
+            }
+        }
+
+        async function testCreateMerchant() {
+            log('🚀 Test création commerçant...', 'info');
+            
+            try {
+                const merchantData = {
+                    data: {
+                        name: 'Boutique Test',
+                        email: 'test@marketplace.local',
+                        phone: '01 23 45 67 89',
+                        city: 'Paris',
+                        address: '123 Rue de Test',
+                        businessType: 'commerce',
+                        description: 'Boutique de test',
+                        isActive: true,
+                        joinedAt: new Date().toISOString()
+                    }
+                };
+
+                const response = await fetch(\`\${API_URL}/merchants\`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(merchantData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    log(\`✅ Commerçant créé: \${result.data.name} (\${result.data.email})\`, 'success');
+                } else {
+                    const error = await response.text();
+                    log(\`❌ Erreur \${response.status}: \${error}\`, 'error');
+                }
+            } catch (error) {
+                log(\`❌ Erreur réseau: \${error.message}\`, 'error');
+            }
+        }
+
+        async function testDashboard() {
+            log('🚀 Test dashboard plateforme...', 'info');
+            
+            try {
+                const response = await fetch(\`\${API_URL}/platform/dashboard\`);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    log(\`✅ Dashboard OK:\`, 'success');
+                    log(\`📊 Commerçants: \${result.data.merchants.total}\`, 'info');
+                    log(\`💳 Abonnements: \${result.data.subscriptions.active}\`, 'info');
+                    log(\`💰 Revenus: \${result.data.subscriptions.monthlyRevenue}€\`, 'info');
+                    log(\`🎫 Tickets: \${result.data.support.openTickets}\`, 'info');
+                } else {
+                    const error = await response.text();
+                    log(\`❌ Erreur \${response.status}: \${error}\`, 'error');
+                }
+            } catch (error) {
+                log(\`❌ Erreur réseau: \${error.message}\`, 'error');
+            }
+        }
+
+        // Test initial
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🌐 API Platform Test - Prêt !', 'success');
+        });
+    </script>
+</body>
+</html>

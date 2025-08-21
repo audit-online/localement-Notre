@@ -1,0 +1,7 @@
+{
+  "name": "marketplace-admin",
+  "displayName": "Marketplace Admin",
+  "description": "Plugin d'administration personnalisé pour la marketplace locale",
+  "version": "1.0.0",
+  "main": "./strapi-server.js"
+}

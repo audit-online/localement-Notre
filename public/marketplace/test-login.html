@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Connexion Simple</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background: #5a6fd8;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .existing-users {
+            background: #e2e3e5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .existing-users h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .user-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>🔑 Test de Connexion Simple</h2>
+        
+        <div class="existing-users">
+            <h3>👥 Comptes disponibles pour test</h3>
+            <div class="user-item">Email : Les utilisateurs que vous avez créés dans l'admin Strapi</div>
+            <div class="user-item">Mot de passe : Celui que vous avez défini</div>
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required placeholder="votre@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe :</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            
+            <button type="submit">Se connecter</button>
+        </form>
+        
+        <div id="result" class="result"></div>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <button onclick="testMultipleAPIs()" style="background: #28a745;">Tester Toutes les APIs</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            showResult('🔄 Test de connexion en cours...', 'info');
+            
+            await testLogin(email, password);
+        });
+        
+        async function testLogin(email, password) {
+            const apis = [
+                { name: 'API Custom', url: '/api/auth/local' },
+                { name: 'API Strapi Standard', url: '/api/users-permissions/auth/local' }
+            ];
+            
+            let results = [];
+            
+            for (const api of apis) {
+                try {
+                    console.log(`Test ${api.name}: ${api.url}`);
+                    
+                    const response = await fetch(api.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            identifier: email,
+                            password: password
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    results.push({
+                        api: api.name,
+                        url: api.url,
+                        status: response.status,
+                        success: response.ok,
+                        data: result
+                    });
+                    
+                    if (response.ok && result.jwt) {
+                        // Connexion réussie !
+                        localStorage.setItem('authToken', result.jwt);
+                        localStorage.setItem('userData', JSON.stringify(result.user));
+                        
+                        showResult(`✅ Connexion réussie avec ${api.name} !
+                        
+Token: ${result.jwt.substring(0, 50)}...
+Utilisateur: ${JSON.stringify(result.user, null, 2)}`, 'success');
+                        
+                        // Tester l'accès au profil
+                        setTimeout(() => testProfile(result.jwt), 2000);
+                        return;
+                    }
+                    
+                } catch (error) {
+                    results.push({
+                        api: api.name,
+                        url: api.url,
+                        error: error.message
+                    });
+                }
+            }
+            
+            // Aucune API n'a fonctionné
+            showResult(`❌ Échec de la connexion sur toutes les APIs:
+
+${results.map(r => `${r.api} (${r.url}): 
+Status: ${r.status || 'Error'}
+${r.error || JSON.stringify(r.data, null, 2)}`).join('\n\n')}`, 'error');
+        }
+        
+        async function testProfile(token) {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult(`✅ Profil récupéré avec succès !
+                    
+${JSON.stringify(result, null, 2)}
+
+🎯 Redirection possible vers les dashboards...`, 'success');
+                } else {
+                    showResult(`⚠️ Connexion réussie mais erreur profil:
+                    
+${JSON.stringify(result, null, 2)}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`⚠️ Connexion réussie mais erreur profil: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testMultipleAPIs() {
+            showResult('🔄 Test de toutes les APIs disponibles...', 'info');
+            
+            const apis = [
+                '/api/auth/local',
+                '/api/users-permissions/auth/local',
+                '/api/auth/login',
+                '/api/users/me',
+                '/api/users-permissions/users/me'
+            ];
+            
+            let results = [];
+            
+            for (const url of apis) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    results.push({
+                        url: url,
+                        status: response.status,
+                        available: response.status !== 404
+                    });
+                    
+                } catch (error) {
+                    results.push({
+                        url: url,
+                        error: error.message
+                    });
+                }
+            }
+            
+            showResult(`📊 APIs disponibles:
+
+${results.map(r => `${r.url}: ${r.available ? '✅ Disponible' : '❌ Indisponible'} (${r.status || r.error})`).join('\n')}`, 'info');
+        }
+        
+        function showResult(message, type) {
+            const result = document.getElementById('result');
+            result.textContent = message;
+            result.className = `result ${type}`;
+            result.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

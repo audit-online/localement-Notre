@@ -1,0 +1,47 @@
+{
+  "name": "marketplace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Strapi application",
+  "scripts": {
+    "build": "strapi build",
+    "console": "strapi console",
+    "deploy": "strapi deploy",
+    "dev": "strapi develop",
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "strapi": "strapi",
+    "upgrade": "npx @strapi/upgrade latest",
+    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+  },
+  "dependencies": {
+    "@strapi/plugin-cloud": "5.22.0",
+    "@strapi/plugin-users-permissions": "5.22.0",
+    "@strapi/strapi": "5.22.0",
+    "@wecre8websites/strapi-page-builder": "^1.0.11",
+    "@wecre8websites/strapi-page-builder-react": "^1.0.14",
+    "axios": "^1.11.0",
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "11.3.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "strapi-plugin-email-designer-v5": "^0.1.6",
+    "strapi-plugin-populate-deep": "^3.0.1",
+    "strapi-plugin-transformer": "^3.1.2",
+    "strapi-plugin-upload": "^0.0.0",
+    "stripe": "^18.4.0",
+    "styled-components": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0 <=22.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "f6db2a91-ba51-4861-a89d-db7831d708b5",
+    "installId": "f802967d365d21ce18740dd8f3e21019c7f246a9852593e4c5b982f88f34105e"
+  }
+}

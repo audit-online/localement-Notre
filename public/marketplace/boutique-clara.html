@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique Clara - Mode Éthique & Accessoires</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --primary-color: #FF69B4;
+            --secondary-color: #8B008B;
+            --accent-color: #FFB6C1;
+            --text-dark: #2C2C2C;
+            --cream: #F8F5F0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary-color) !important;
+            text-decoration: none;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+            transform: translateY(-2px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--cream) 0%, #FFF0F5 100%);
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 3rem;
+            min-height: 500px;
+        }
+
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .hero-image {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Buttons */
+        .btn-custom {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 1rem;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 105, 180, 0.4);
+            color: white;
+        }
+
+        .btn-outline-custom {
+            background: transparent;
+            color: var(--secondary-color);
+            border: 2px solid var(--secondary-color);
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* Sections */
+        .section {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .product-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* About Section */
+        .about-section {
+            background: var(--cream);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .clara-portrait {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        /* Values */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .value-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .value-icon {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .contact-item {
+            padding: 1rem;
+        }
+
+        .contact-item i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in:nth-child(3) { animation-delay: 0.3s; }
+        .fade-in:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#accueil">
+                <i class="fas fa-heart me-2"></i>Boutique Clara
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#accueil">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#collections">Collections</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#a-propos">À Propos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-arrow-left me-1"></i>Retour Marketplace
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="accueil">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text fade-in">
+                    <h1>Mode Éthique & Durable</h1>
+                    <p>Découvrez notre collection exclusive de vêtements éco-responsables, fabriqués avec amour et dans le respect de l'environnement. Chez Boutique Clara, chaque pièce raconte une histoire.</p>
+                    <div class="hero-buttons">
+                        <a href="#collections" class="btn-custom btn-primary-custom">
+                            <i class="fas fa-shopping-bag me-2"></i>Découvrir la Collection
+                        </a>
+                        <a href="#a-propos" class="btn-custom btn-outline-custom">
+                            <i class="fas fa-leaf me-2"></i>Notre Histoire
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image fade-in">
+                    <img src="https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=871&q=80" alt="Boutique Clara - Mode Éthique">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Collections Section -->
+    <section class="section" id="collections">
+        <div class="container">
+            <h2 class="section-title">Nos Collections</h2>
+            <p class="text-center mb-5" style="font-size: 1.1rem; color: #666;">
+                Chaque pièce est soigneusement sélectionnée pour allier style, confort et respect de l'environnement.
+            </p>
+            
+            <div class="products-grid">
+                <div class="product-card fade-in">
+                    <div class="product-badge">Nouveauté</div>
+                    <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?ixlib=rb-4.0.3&auto=format&fit=crop&w=1005&q=80" alt="Robe d'été en lin bio" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-title">Robe d'été Lin Bio</h3>
+                        <p class="product-description">Robe légère en lin biologique, parfaite pour les journées ensoleillées. Coupe fluide et confortable.</p>
+                        <div class="product-price">89€</div>
+                        <button class="btn-custom btn-primary-custom btn-sm buy-now-btn" 
+                                data-product-name="Robe d'été Lin Bio" 
+                                data-product-price="89" 
+                                data-product-id="robe-lin-bio-1">
+                            <i class="fas fa-credit-card me-1"></i>Acheter maintenant
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-badge">Éco-responsable</div>
+                    <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Blouse coton éthique" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-title">Blouse Coton Éthique</h3>
+                        <p class="product-description">Blouse élégante en coton biologique certifié GOTS. Fabrication française artisanale.</p>
+                        <div class="product-price">65€</div>
+                        <button class="btn-custom btn-primary-custom btn-sm buy-now-btn" 
+                                data-product-name="Blouse Coton Éthique" 
+                                data-product-price="65" 
+                                data-product-id="blouse-coton-ethique-1">
+                            <i class="fas fa-credit-card me-1"></i>Acheter maintenant
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <div class="product-badge">Fait Main</div>
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=920&q=80" alt="Accessoires fait main" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-title">Accessoires Artisanaux</h3>
+                        <p class="product-description">Collection d'accessoires uniques, confectionnés à la main par des artisans locaux.</p>
+                        <div class="product-price">25€ - 45€</div>
+                        <button class="btn-custom btn-primary-custom btn-sm buy-now-btn" 
+                                data-product-name="Accessoires Artisanaux" 
+                                data-product-price="35" 
+                                data-product-id="accessoires-artisanaux-1">
+                            <i class="fas fa-credit-card me-1"></i>Acheter maintenant
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <img src="https://images.unsplash.com/photo-1544966503-7cc5ac882d5a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Jean éco-responsable" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-title">Jean Éco-Responsable</h3>
+                        <p class="product-description">Jean en denim bio, teint avec des colorants naturels. Coupe moderne et intemporelle.</p>
+                        <div class="product-price">95€</div>
+                        <button class="btn-custom btn-primary-custom btn-sm buy-now-btn" 
+                                data-product-name="Jean Éco-Responsable" 
+                                data-product-price="95" 
+                                data-product-id="jean-eco-responsable-1">
+                            <i class="fas fa-credit-card me-1"></i>Acheter maintenant
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Pull en laine recyclée" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-title">Pull Laine Recyclée</h3>
+                        <p class="product-description">Pull douillet en laine recyclée, tricotage traditionnel français. Chaleur et style garantis.</p>
+                        <div class="product-price">120€</div>
+                        <button class="btn-custom btn-primary-custom btn-sm buy-now-btn" 
+                                data-product-name="Pull Laine Recyclée" 
+                                data-product-price="120" 
+                                data-product-id="pull-laine-recyclee-1">
+                            <i class="fas fa-credit-card me-1"></i>Acheter maintenant
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-card fade-in">
+                    <img src="https://images.unsplash.com/photo-1506629905607-14d67d4b2421?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Chaussures vegan" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-title">Chaussures Vegan</h3>
+                        <p class="product-description">Chaussures élégantes en cuir végétal, conçues pour durer. Alternative éthique au cuir animal.</p>
+                        <div class="product-price">150€</div>
+                        <button class="btn-custom btn-primary-custom btn-sm buy-now-btn" 
+                                data-product-name="Chaussures Vegan" 
+                                data-product-price="150" 
+                                data-product-id="chaussures-vegan-1">
+                            <i class="fas fa-credit-card me-1"></i>Acheter maintenant
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="a-propos">
+        <div class="container">
+            <div class="about-section">
+                <h2 class="section-title">À Propos de Clara</h2>
+                <div class="about-content">
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616c9c7103e?ixlib=rb-4.0.3&auto=format&fit=crop&w=687&q=80" alt="Clara - Fondatrice" class="clara-portrait">
+                    </div>
+                    <div>
+                        <p class="mb-4" style="font-size: 1.1rem;">
+                            Passionnée de mode depuis mon enfance, j'ai créé Boutique Clara avec une mission claire : prouver que l'on peut être élégant tout en respectant notre planète.
+                        </p>
+                        <p class="mb-4">
+                            Après 10 ans dans l'industrie textile traditionnelle, j'ai pris conscience de l'impact environnemental de nos choix vestimentaires. C'est pourquoi j'ai décidé de créer une alternative éthique et durable.
+                        </p>
+                        <p class="mb-4">
+                            Chaque pièce de notre collection est sélectionnée selon des critères stricts : matières biologiques, production locale, conditions de travail équitables et durabilité.
+                        </p>
+                        <div class="signature" style="font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--secondary-color);">
+                            Clara Dubois
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Values -->
+            <div class="values-grid mt-5">
+                <div class="value-card fade-in">
+                    <div class="value-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3>Éco-Responsable</h3>
+                    <p>Matières biologiques et procédés de fabrication respectueux de l'environnement.</p>
+                </div>
+                <div class="value-card fade-in">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Commerce Équitable</h3>
+                    <p>Partenariats durables avec nos fournisseurs et conditions de travail éthiques.</p>
+                </div>
+                <div class="value-card fade-in">
+                    <div class="value-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3>Qualité Française</h3>
+                    <p>Fabrication locale par des artisans français pour une qualité irréprochable.</p>
+                </div>
+                <div class="value-card fade-in">
+                    <div class="value-icon">
+                        <i class="fas fa-recycle"></i>
+                    </div>
+                    <h3>Durabilité</h3>
+                    <p>Pièces intemporelles conçues pour durer et réduire la surconsommation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section" id="contact">
+        <div class="container">
+            <div class="contact-section">
+                <h2 style="color: white; margin-bottom: 1rem;">Venez nous rencontrer</h2>
+                <p style="font-size: 1.1rem; opacity: 0.9;">
+                    Notre boutique vous accueille dans un cadre chaleureux au cœur de la ville.
+                </p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h4>Adresse</h4>
+                        <p>15 rue de la République<br>75001 Paris</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <h4>Horaires</h4>
+                        <p>Mar-Sam: 10h-19h<br>Dim: 14h-18h</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <h4>Téléphone</h4>
+                        <p>01 42 36 85 92</p>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <h4>Email</h4>
+                        <p>contact@boutique-clara.fr</p>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <a href="../marketplace/contact.html" class="btn-custom" style="background: white; color: var(--secondary-color);">
+                        <i class="fas fa-store me-2"></i>Rejoindre Localement Vôtre
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Boutique Clara</h5>
+                    <p>Mode éthique et durable depuis 2020</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="social-links">
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="text-center">
+                <small>&copy; 2025 Boutique Clara - Tous droits réservés | 
+                <a href="index.html" class="text-white">Retour à Localement Vôtre</a></small>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling pour les liens d'ancrage
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animation au scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observer tous les éléments avec animation
+        document.querySelectorAll('.product-card, .value-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Effet parallax léger sur les images
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.hero-image img');
+            
+            parallaxElements.forEach(element => {
+                const speed = 0.5;
+                element.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        console.log('✨ Boutique Clara - Site web chargé avec succès !');
+    </script>
+
+    <!-- Modal de paiement Stripe -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">
+                        <i class="fas fa-credit-card me-2"></i>Paiement sécurisé
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Récapitulatif de votre commande</h6>
+                            <div class="order-summary p-3 bg-light rounded">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span id="product-name">Produit</span>
+                                    <span id="product-price">0€</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Livraison</span>
+                                    <span class="text-success">Gratuite</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between fw-bold">
+                                    <span>Total</span>
+                                    <span id="total-price">0€</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Informations de paiement</h6>
+                            <form id="payment-form">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Informations de carte</label>
+                                    <div id="card-element" class="form-control" style="height: 40px; padding: 10px;">
+                                        <!-- Stripe Elements va injecter le formulaire ici -->
+                                    </div>
+                                    <div id="card-errors" role="alert" class="text-danger mt-2"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="billing-name" class="form-label">Nom complet</label>
+                                        <input type="text" class="form-control" id="billing-name" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="postal-code" class="form-label">Code postal</label>
+                                        <input type="text" class="form-control" id="postal-code" required>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="submit-payment" disabled>
+                        <span id="payment-button-text">Payer maintenant</span>
+                        <div class="spinner-border spinner-border-sm ms-2 d-none" id="payment-spinner"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Stripe et logique de paiement -->
+    <script>
+        // Configuration Stripe (clé publique de test)
+        const stripe = Stripe('pk_test_51PqR4nRoIjZzJ7fZ7tKlR6O8Y9p2G4pJKZrZHfRoYNnF7SPLKqr8Lhw8GnMJKmQOGWYpX7Fh8Kn2J4QbF6tN1YgP00XYZ123456');
+        const elements = stripe.elements();
+
+        // Style du formulaire de carte
+        const cardStyle = {
+            style: {
+                base: {
+                    color: '#424770',
+                    fontFamily: 'Poppins, system-ui, sans-serif',
+                    fontSmoothing: 'antialiased',
+                    fontSize: '16px',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#9e2146',
+                    iconColor: '#9e2146'
+                }
+            }
+        };
+
+        // Créer l'élément carte
+        const cardElement = elements.create('card', cardStyle);
+        cardElement.mount('#card-element');
+
+        // Variables globales pour le produit sélectionné
+        let selectedProduct = {};
+
+        // Gestion des erreurs de carte
+        cardElement.on('change', ({error}) => {
+            const displayError = document.getElementById('card-errors');
+            if (error) {
+                displayError.textContent = error.message;
+            } else {
+                displayError.textContent = '';
+            }
+            
+            // Activer/désactiver le bouton de paiement
+            const submitButton = document.getElementById('submit-payment');
+            submitButton.disabled = !!error || !document.getElementById('email').value || !document.getElementById('billing-name').value;
+        });
+
+        // Validation des champs requis
+        document.querySelectorAll('#email, #billing-name, #postal-code').forEach(input => {
+            input.addEventListener('input', () => {
+                const submitButton = document.getElementById('submit-payment');
+                const allFieldsFilled = document.getElementById('email').value && 
+                                       document.getElementById('billing-name').value && 
+                                       document.getElementById('postal-code').value;
+                submitButton.disabled = !allFieldsFilled;
+            });
+        });
+
+        // Gestionnaire pour les boutons "Acheter maintenant"
+        document.querySelectorAll('.buy-now-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                selectedProduct = {
+                    name: this.dataset.productName,
+                    price: parseFloat(this.dataset.productPrice),
+                    id: this.dataset.productId
+                };
+                
+                // Mettre à jour le modal avec les informations du produit
+                document.getElementById('product-name').textContent = selectedProduct.name;
+                document.getElementById('product-price').textContent = selectedProduct.price + '€';
+                document.getElementById('total-price').textContent = selectedProduct.price + '€';
+                
+                // Afficher le modal
+                const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                modal.show();
+            });
+        });
+
+        // Gestionnaire de soumission du paiement
+        document.getElementById('submit-payment').addEventListener('click', async () => {
+            const submitButton = document.getElementById('submit-payment');
+            const buttonText = document.getElementById('payment-button-text');
+            const spinner = document.getElementById('payment-spinner');
+            
+            // Désactiver le bouton et afficher le spinner
+            submitButton.disabled = true;
+            buttonText.textContent = 'Traitement...';
+            spinner.classList.remove('d-none');
+
+            try {
+                // Créer l'intention de paiement côté serveur
+                const response = await fetch('/api/payment/create-payment-intent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: selectedProduct.price,
+                        currency: 'eur',
+                        metadata: {
+                            product_name: selectedProduct.name,
+                            product_id: selectedProduct.id,
+                            customer_email: document.getElementById('email').value
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la création du paiement');
+                }
+
+                const paymentData = await response.json();
+
+                // Confirmer le paiement avec Stripe
+                const {error, paymentIntent} = await stripe.confirmCardPayment(paymentData.client_secret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: document.getElementById('billing-name').value,
+                            email: document.getElementById('email').value,
+                            address: {
+                                postal_code: document.getElementById('postal-code').value
+                            }
+                        }
+                    }
+                });
+
+                if (error) {
+                    // Afficher l'erreur
+                    document.getElementById('card-errors').textContent = error.message;
+                    throw new Error(error.message);
+                } else if (paymentIntent.status === 'succeeded') {
+                    // Paiement réussi !
+                    alert('🎉 Paiement réussi ! Merci pour votre achat.\n\nVotre commande sera traitée dans les plus brefs délais.');
+                    
+                    // Fermer le modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                    modal.hide();
+                    
+                    // Réinitialiser le formulaire
+                    document.getElementById('payment-form').reset();
+                    cardElement.clear();
+                }
+            } catch (error) {
+                console.error('Erreur de paiement:', error);
+                alert('❌ Erreur lors du paiement: ' + error.message + '\n\nVeuillez réessayer.');
+            } finally {
+                // Réactiver le bouton
+                submitButton.disabled = false;
+                buttonText.textContent = 'Payer maintenant';
+                spinner.classList.add('d-none');
+            }
+        });
+
+        // Réinitialiser le formulaire quand le modal se ferme
+        document.getElementById('paymentModal').addEventListener('hidden.bs.modal', () => {
+            document.getElementById('payment-form').reset();
+            cardElement.clear();
+            document.getElementById('card-errors').textContent = '';
+            document.getElementById('submit-payment').disabled = true;
+        });
+
+        console.log('💳 Système de paiement Stripe initialisé');
+    </script>
+</body>
+</html>

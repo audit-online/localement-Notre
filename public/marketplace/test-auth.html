@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Authentification - Localement Vôtre</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .test-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .test-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .test-button:hover {
+            background: #5a6fd8;
+        }
+        
+        .test-button.success {
+            background: #28a745;
+        }
+        
+        .test-button.error {
+            background: #dc3545;
+        }
+        
+        .result {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .account-info {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .account-info strong {
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Test du Système d'Authentification</h1>
+        
+        <div class="test-section">
+            <h3>📋 1. Création de Comptes de Test</h3>
+            <p>Créer les comptes utilisateurs pour tester le système.</p>
+            
+            <button class="test-button" onclick="createTestUser('customer')">Créer Client Test</button>
+            <button class="test-button" onclick="createTestUser('merchant')">Créer Commerçant Test</button>
+            <button class="test-button" onclick="createTestUser('commercial')">Créer Commercial Test</button>
+            <button class="test-button" onclick="createTestUser('super-admin')">Créer Super Admin</button>
+            
+            <div id="create-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔑 2. Test de Connexion</h3>
+            <p>Tester la connexion avec les différents comptes.</p>
+            
+            <div class="account-info">
+                <strong>Client Test:</strong> customer@test.fr / Customer123!
+            </div>
+            <div class="account-info">
+                <strong>Commerçant Test:</strong> merchant@test.fr / Merchant123!
+            </div>
+            <div class="account-info">
+                <strong>Commercial Test:</strong> commercial@test.fr / Commercial123!
+            </div>
+            <div class="account-info">
+                <strong>Super Admin:</strong> admin@test.fr / Admin123!
+            </div>
+            
+            <button class="test-button" onclick="testLogin('customer@test.fr', 'Customer123!')">Test Connexion Client</button>
+            <button class="test-button" onclick="testLogin('merchant@test.fr', 'Merchant123!')">Test Connexion Commerçant</button>
+            <button class="test-button" onclick="testLogin('commercial@test.fr', 'Commercial123!')">Test Connexion Commercial</button>
+            <button class="test-button" onclick="testLogin('admin@test.fr', 'Admin123!')">Test Connexion Admin</button>
+            
+            <div id="login-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>👤 3. Test de Profil</h3>
+            <p>Tester l'accès au profil utilisateur connecté.</p>
+            
+            <button class="test-button" onclick="testProfile()">Vérifier Profil</button>
+            <button class="test-button" onclick="testLogout()">Se Déconnecter</button>
+            
+            <div id="profile-result" class="result" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🏪 4. Navigation vers Dashboards</h3>
+            <p>Tester les redirections vers les différents dashboards.</p>
+            
+            <button class="test-button" onclick="goToDashboard('customer')">Dashboard Client</button>
+            <button class="test-button" onclick="goToDashboard('merchant')">Dashboard Commerçant</button>
+            <button class="test-button" onclick="goToDashboard('commercial')">Dashboard Commercial</button>
+            <button class="test-button" onclick="goToDashboard('admin')">Dashboard Admin</button>
+        </div>
+    </div>
+
+    <script>
+        let currentToken = localStorage.getItem('authToken');
+        
+        // Afficher le token s'il existe
+        if (currentToken) {
+            console.log('Token existant:', currentToken);
+        }
+        
+        async function createTestUser(userType) {
+            const users = {
+                'customer': {
+                    username: 'testcustomer',
+                    email: 'customer@test.fr',
+                    password: 'Customer123!',
+                    userType: 'customer'
+                },
+                'merchant': {
+                    username: 'testmerchant',
+                    email: 'merchant@test.fr',
+                    password: 'Merchant123!',
+                    userType: 'merchant'
+                },
+                'commercial': {
+                    username: 'testcommercial',
+                    email: 'commercial@test.fr',
+                    password: 'Commercial123!',
+                    userType: 'commercial'
+                },
+                'super-admin': {
+                    username: 'testadmin',
+                    email: 'admin@test.fr',
+                    password: 'Admin123!',
+                    userType: 'super-admin'
+                }
+            };
+            
+            const userData = users[userType];
+            
+            try {
+                const response = await fetch('/api/auth/local/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const result = await response.json();
+                
+                showResult('create-result', {
+                    status: response.status,
+                    success: response.ok,
+                    data: result
+                });
+                
+            } catch (error) {
+                showResult('create-result', {
+                    error: error.message
+                });
+            }
+        }
+        
+        async function testLogin(email, password) {
+            try {
+                const response = await fetch('/api/auth/local', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        identifier: email,
+                        password: password
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.jwt) {
+                    currentToken = result.jwt;
+                    localStorage.setItem('authToken', currentToken);
+                }
+                
+                showResult('login-result', {
+                    status: response.status,
+                    success: response.ok,
+                    data: result
+                });
+                
+            } catch (error) {
+                showResult('login-result', {
+                    error: error.message
+                });
+            }
+        }
+        
+        async function testProfile() {
+            if (!currentToken) {
+                showResult('profile-result', {
+                    error: 'Aucun token trouvé. Connectez-vous d\'abord.'
+                });
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                showResult('profile-result', {
+                    status: response.status,
+                    success: response.ok,
+                    data: result
+                });
+                
+            } catch (error) {
+                showResult('profile-result', {
+                    error: error.message
+                });
+            }
+        }
+        
+        async function testLogout() {
+            if (!currentToken) {
+                showResult('profile-result', {
+                    error: 'Aucun token trouvé.'
+                });
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    currentToken = null;
+                    localStorage.removeItem('authToken');
+                }
+                
+                showResult('profile-result', {
+                    status: response.status,
+                    success: response.ok,
+                    data: result
+                });
+                
+            } catch (error) {
+                showResult('profile-result', {
+                    error: error.message
+                });
+            }
+        }
+        
+        function goToDashboard(userType) {
+            const dashboards = {
+                'customer': '/marketplace/customer-dashboard.html',
+                'merchant': '/marketplace/merchant-dashboard.html',
+                'commercial': '/marketplace/commercial-dashboard.html',
+                'admin': '/marketplace/platform-admin.html'
+            };
+            
+            const url = dashboards[userType];
+            if (url) {
+                window.open(url, '_blank');
+            }
+        }
+        
+        function showResult(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = JSON.stringify(data, null, 2);
+            
+            // Mettre à jour la couleur du bouton
+            const buttons = element.parentElement.querySelectorAll('.test-button');
+            buttons.forEach(btn => {
+                btn.classList.remove('success', 'error');
+                if (data.success) {
+                    btn.classList.add('success');
+                } else if (data.error || !data.success) {
+                    btn.classList.add('error');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

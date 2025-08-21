@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Générateur de Sites Professionnels</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .creator-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            margin: 2rem auto;
+            max-width: 1400px;
+        }
+        
+        .template-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+        
+        .template-preview {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .template-preview:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .template-preview.selected {
+            border: 3px solid #007bff;
+            transform: scale(1.05);
+        }
+        
+        .template-frame {
+            width: 100%;
+            height: 280px;
+            border: none;
+            background: white;
+        }
+        
+        .template-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 2rem 1.5rem 1.5rem;
+            text-align: center;
+        }
+        
+        .template-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .template-features {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .customization-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .color-scheme {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .color-option {
+            height: 80px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 3px solid transparent;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .color-option.selected {
+            border-color: #000;
+            transform: scale(1.1);
+        }
+        
+        .color-name {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .final-preview {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 2rem;
+        }
+        
+        .preview-toolbar {
+            background: #f8f9fa;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .device-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .device-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            background: #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .device-btn.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            gap: 1rem;
+        }
+        
+        .step {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .step.active {
+            background: #007bff;
+            color: white;
+            transform: scale(1.2);
+        }
+        
+        .step.completed {
+            background: #28a745;
+            color: white;
+        }
+        
+        .step-connector {
+            width: 60px;
+            height: 2px;
+            background: #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .step-connector.completed {
+            background: #28a745;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            padding: 2rem;
+            gap: 1rem;
+        }
+        
+        .btn-modern {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary-modern {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .btn-success-modern {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .enterprise-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="creator-container">
+        <!-- En-tête -->
+        <div class="text-center py-4 border-bottom">
+            <h1 class="display-4 fw-bold mb-2">🚀 Générateur de Sites Pro</h1>
+            <p class="lead text-muted">Créez des sites web professionnels de niveau commercial</p>
+        </div>
+        
+        <!-- Indicateur d'étapes -->
+        <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step-connector" id="connector1"></div>
+            <div class="step" id="step2">2</div>
+            <div class="step-connector" id="connector2"></div>
+            <div class="step" id="step3">3</div>
+            <div class="step-connector" id="connector3"></div>
+            <div class="step" id="step4">4</div>
+        </div>
+        
+        <!-- Étape 1: Choix du template -->
+        <div class="step-content" id="stepContent1">
+            <div class="text-center mb-4">
+                <h2 class="h3 fw-bold">Choisissez votre template professionnel</h2>
+                <p class="text-muted">Templates de qualité commerciale utilisés par de vraies entreprises</p>
+            </div>
+            
+            <div class="template-gallery">
+                <!-- Template Restaurant Haut de Gamme -->
+                <div class="template-preview" data-template="luxury-restaurant">
+                    <div class="enterprise-badge">Premium</div>
+                    <iframe class="template-frame" src="data:text/html;charset=utf-8,
+                        <html><head><style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body { font-family: 'Georgia', serif; line-height: 1.6; }
+                        .hero { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 800%22><rect fill=%22%238B4513%22 width=%221200%22 height=%22800%22/><circle fill=%22%23DAA520%22 cx=%22300%22 cy=%22200%22 r=%2280%22/><circle fill=%22%23FF6347%22 cx=%22900%22 cy=%22600%22 r=%2260%22/></svg>'); height: 100vh; display: flex; align-items: center; justify-content: center; color: white; text-align: center; }
+                        .nav { position: fixed; top: 0; width: 100%; background: rgba(0,0,0,0.9); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
+                        .logo { font-size: 1.8rem; font-weight: bold; color: #DAA520; }
+                        .nav-links { display: flex; gap: 2rem; list-style: none; }
+                        .nav-links a { color: white; text-decoration: none; font-weight: 500; transition: color 0.3s; }
+                        .nav-links a:hover { color: #DAA520; }
+                        .hero-content h1 { font-size: 4rem; margin-bottom: 1rem; font-weight: 300; }
+                        .hero-content p { font-size: 1.3rem; margin-bottom: 2rem; max-width: 600px; }
+                        .cta-btn { background: #DAA520; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 50px; font-weight: 600; transition: transform 0.3s; }
+                        .cta-btn:hover { transform: translateY(-3px); }
+                        .section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; }
+                        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
+                        .menu-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s; }
+                        .menu-item:hover { transform: translateY(-10px); }
+                        .menu-image { height: 200px; background: linear-gradient(45deg, #DAA520, #FF6347); }
+                        .menu-content { padding: 2rem; }
+                        .menu-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; }
+                        .menu-price { color: #DAA520; font-size: 1.3rem; font-weight: bold; }
+                        </style></head><body>
+                        <nav class='nav'>
+                            <div class='logo'>Le Gourmet</div>
+                            <ul class='nav-links'>
+                                <li><a href='#'>Accueil</a></li>
+                                <li><a href='#'>Menu</a></li>
+                                <li><a href='#'>Réservation</a></li>
+                                <li><a href='#'>Contact</a></li>
+                            </ul>
+                        </nav>
+                        <section class='hero'>
+                            <div class='hero-content'>
+                                <h1>Expérience Culinaire d'Exception</h1>
+                                <p>Découvrez une cuisine raffinée dans un cadre élégant. Réservez votre table pour une soirée inoubliable.</p>
+                                <a href='#' class='cta-btn'>Réserver une table</a>
+                            </div>
+                        </section>
+                        <section class='section'>
+                            <h2 style='text-align: center; font-size: 2.5rem; margin-bottom: 2rem;'>Menu Signature</h2>
+                            <div class='menu-grid'>
+                                <div class='menu-item'>
+                                    <div class='menu-image'></div>
+                                    <div class='menu-content'>
+                                        <h3 class='menu-title'>Foie Gras de Canard</h3>
+                                        <p>Accompagné d'un chutney de figues et pain brioche</p>
+                                        <div class='menu-price'>32€</div>
+                                    </div>
+                                </div>
+                                <div class='menu-item'>
+                                    <div class='menu-image'></div>
+                                    <div class='menu-content'>
+                                        <h3 class='menu-title'>Homard Thermidor</h3>
+                                        <p>Gratiné au champagne, légumes de saison</p>
+                                        <div class='menu-price'>48€</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        </body></html>"></iframe>
+                    <div class="template-info">
+                        <div class="template-name">Restaurant Gastronomique</div>
+                        <div class="template-features">Réservations • Menu dynamique • Galerie photos • SEO optimisé</div>
+                    </div>
+                </div>
+                
+                <!-- Template E-commerce Moderne -->
+                <div class="template-preview" data-template="modern-ecommerce">
+                    <div class="enterprise-badge">Pro</div>
+                    <iframe class="template-frame" src="data:text/html;charset=utf-8,
+                        <html><head><style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body { font-family: 'Arial', sans-serif; }
+                        .header { background: white; padding: 1rem 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+                        .nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
+                        .logo { font-size: 2rem; font-weight: bold; color: #333; }
+                        .nav-menu { display: flex; gap: 2rem; list-style: none; }
+                        .nav-menu a { text-decoration: none; color: #666; font-weight: 500; }
+                        .cart-icon { background: #007bff; color: white; padding: 0.5rem 1rem; border-radius: 25px; }
+                        .hero-section { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4rem 2rem; text-align: center; }
+                        .hero-content h1 { font-size: 3rem; margin-bottom: 1rem; }
+                        .hero-content p { font-size: 1.2rem; margin-bottom: 2rem; }
+                        .shop-btn { background: white; color: #333; padding: 1rem 2rem; text-decoration: none; border-radius: 30px; font-weight: 600; }
+                        .products { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+                        .products h2 { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; }
+                        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+                        .product-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); transition: transform 0.3s; }
+                        .product-card:hover { transform: translateY(-5px); }
+                        .product-image { height: 200px; background: linear-gradient(45deg, #667eea, #764ba2); position: relative; }
+                        .sale-badge { position: absolute; top: 10px; right: 10px; background: #ff4757; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; }
+                        .product-info { padding: 1.5rem; }
+                        .product-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+                        .product-price { color: #007bff; font-size: 1.4rem; font-weight: bold; }
+                        .add-to-cart { background: #28a745; color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; width: 100%; margin-top: 1rem; cursor: pointer; }
+                        </style></head><body>
+                        <header class='header'>
+                            <nav class='nav'>
+                                <div class='logo'>TechStore</div>
+                                <ul class='nav-menu'>
+                                    <li><a href='#'>Accueil</a></li>
+                                    <li><a href='#'>Produits</a></li>
+                                    <li><a href='#'>Offres</a></li>
+                                    <li><a href='#'>Support</a></li>
+                                </ul>
+                                <div class='cart-icon'>🛒 Panier (2)</div>
+                            </nav>
+                        </header>
+                        <section class='hero-section'>
+                            <div class='hero-content'>
+                                <h1>Innovation Technologique</h1>
+                                <p>Découvrez les dernières innovations tech à prix imbattables</p>
+                                <a href='#' class='shop-btn'>Découvrir la boutique</a>
+                            </div>
+                        </section>
+                        <section class='products'>
+                            <h2>Produits Phares</h2>
+                            <div class='product-grid'>
+                                <div class='product-card'>
+                                    <div class='product-image'>
+                                        <span class='sale-badge'>-20%</span>
+                                    </div>
+                                    <div class='product-info'>
+                                        <h3 class='product-title'>Smartphone Pro Max</h3>
+                                        <div class='product-price'>899€</div>
+                                        <button class='add-to-cart'>Ajouter au panier</button>
+                                    </div>
+                                </div>
+                                <div class='product-card'>
+                                    <div class='product-image'></div>
+                                    <div class='product-info'>
+                                        <h3 class='product-title'>Casque Gaming Elite</h3>
+                                        <div class='product-price'>159€</div>
+                                        <button class='add-to-cart'>Ajouter au panier</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        </body></html>"></iframe>
+                    <div class="template-info">
+                        <div class="template-name">E-commerce Moderne</div>
+                        <div class="template-features">Panier • Paiement • Gestion stock • Analytics • Mobile-first</div>
+                    </div>
+                </div>
+                
+                <!-- Template Artisan Portfolio -->
+                <div class="template-preview" data-template="artisan-portfolio">
+                    <div class="enterprise-badge">Creative</div>
+                    <iframe class="template-frame" src="data:text/html;charset=utf-8,
+                        <html><head><style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body { font-family: 'Helvetica', sans-serif; background: #0a0a0a; color: white; }
+                        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+                        .nav { display: flex; justify-content: space-between; align-items: center; padding: 2rem 0; }
+                        .logo { font-size: 1.5rem; font-weight: 300; letter-spacing: 2px; }
+                        .nav-links { display: flex; gap: 3rem; list-style: none; }
+                        .nav-links a { color: #ccc; text-decoration: none; font-weight: 300; transition: color 0.3s; }
+                        .nav-links a:hover { color: #fff; }
+                        .hero { padding: 4rem 0; text-align: center; }
+                        .hero h1 { font-size: 4rem; font-weight: 100; margin-bottom: 1rem; letter-spacing: 3px; }
+                        .hero p { font-size: 1.2rem; color: #888; margin-bottom: 3rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+                        .portfolio { padding: 4rem 0; }
+                        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+                        .portfolio-item { position: relative; overflow: hidden; aspect-ratio: 4/3; cursor: pointer; }
+                        .portfolio-image { width: 100%; height: 100%; background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3); transition: transform 0.5s ease; }
+                        .portfolio-item:hover .portfolio-image { transform: scale(1.1); }
+                        .portfolio-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); opacity: 0; transition: opacity 0.3s ease; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+                        .portfolio-item:hover .portfolio-overlay { opacity: 1; }
+                        .portfolio-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+                        .portfolio-category { color: #888; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
+                        .about { padding: 6rem 0; background: #111; }
+                        .about-content { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+                        .about-text h2 { font-size: 3rem; font-weight: 100; margin-bottom: 2rem; }
+                        .about-text p { font-size: 1.1rem; line-height: 1.8; color: #ccc; margin-bottom: 1.5rem; }
+                        .cta-button { background: linear-gradient(45deg, #ff6b6b, #feca57); color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 0; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+                        </style></head><body>
+                        <div class='container'>
+                            <nav class='nav'>
+                                <div class='logo'>ATELIER MARTIN</div>
+                                <ul class='nav-links'>
+                                    <li><a href='#'>Accueil</a></li>
+                                    <li><a href='#'>Portfolio</a></li>
+                                    <li><a href='#'>Services</a></li>
+                                    <li><a href='#'>Contact</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <section class='hero'>
+                            <div class='container'>
+                                <h1>CRÉATEUR D'EXCEPTION</h1>
+                                <p>Artisan ébéniste depuis 25 ans, je crée des pièces uniques alliant tradition et modernité pour sublimer votre intérieur.</p>
+                            </div>
+                        </section>
+                        <section class='portfolio'>
+                            <div class='container'>
+                                <div class='portfolio-grid'>
+                                    <div class='portfolio-item'>
+                                        <div class='portfolio-image'></div>
+                                        <div class='portfolio-overlay'>
+                                            <div class='portfolio-title'>Table Basse Contemporaine</div>
+                                            <div class='portfolio-category'>Mobilier</div>
+                                        </div>
+                                    </div>
+                                    <div class='portfolio-item'>
+                                        <div class='portfolio-image'></div>
+                                        <div class='portfolio-overlay'>
+                                            <div class='portfolio-title'>Bibliothèque Sur Mesure</div>
+                                            <div class='portfolio-category'>Aménagement</div>
+                                        </div>
+                                    </div>
+                                    <div class='portfolio-item'>
+                                        <div class='portfolio-image'></div>
+                                        <div class='portfolio-overlay'>
+                                            <div class='portfolio-title'>Escalier Design</div>
+                                            <div class='portfolio-category'>Architecture</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class='about'>
+                            <div class='container'>
+                                <div class='about-content'>
+                                    <div class='about-text'>
+                                        <h2>Savoir-Faire Artisanal</h2>
+                                        <p>Chaque pièce est unique, pensée et réalisée selon vos besoins spécifiques. Mon approche combine respect des techniques traditionnelles et innovation contemporaine.</p>
+                                        <p>De la conception à la réalisation, je vous accompagne dans tous vos projets d'aménagement et de création mobilier.</p>
+                                        <a href='#' class='cta-button'>Découvrir mes créations</a>
+                                    </div>
+                                    <div style='background: linear-gradient(45deg, #333, #666); height: 400px;'></div>
+                                </div>
+                            </div>
+                        </section>
+                        </body></html>"></iframe>
+                    <div class="template-info">
+                        <div class="template-name">Portfolio Artisan</div>
+                        <div class="template-features">Galerie interactive • Devis en ligne • Blog • Testimonials</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Étape 2: Personnalisation couleurs -->
+        <div class="step-content d-none" id="stepContent2">
+            <div class="customization-panel">
+                <h2 class="h3 fw-bold mb-4">Personnalisez votre identité visuelle</h2>
+                <p class="text-muted mb-4">Choisissez une palette de couleurs professionnelle qui reflète votre marque</p>
+                
+                <div class="color-scheme">
+                    <div class="color-option" data-color="corporate" style="background: linear-gradient(135deg, #2c3e50, #3498db);">
+                        <div class="color-name">Corporate Blue</div>
+                    </div>
+                    <div class="color-option" data-color="luxury" style="background: linear-gradient(135deg, #000000, #DAA520);">
+                        <div class="color-name">Luxury Gold</div>
+                    </div>
+                    <div class="color-option" data-color="nature" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
+                        <div class="color-name">Nature Green</div>
+                    </div>
+                    <div class="color-option" data-color="creative" style="background: linear-gradient(135deg, #9b59b6, #e74c3c);">
+                        <div class="color-name">Creative Purple</div>
+                    </div>
+                    <div class="color-option" data-color="minimalist" style="background: linear-gradient(135deg, #95a5a6, #34495e);">
+                        <div class="color-name">Minimalist Gray</div>
+                    </div>
+                    <div class="color-option" data-color="warm" style="background: linear-gradient(135deg, #e67e22, #f39c12);">
+                        <div class="color-name">Warm Orange</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Étape 3: Fonctionnalités -->
+        <div class="step-content d-none" id="stepContent3">
+            <div class="customization-panel">
+                <h2 class="h3 fw-bold mb-4">Fonctionnalités professionnelles</h2>
+                <p class="text-muted mb-4">Sélectionnez les modules dont vous avez besoin</p>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="feature-card p-4 border rounded-3" data-feature="booking">
+                            <h5><i class="fas fa-calendar-check text-primary me-2"></i>Système de réservation</h5>
+                            <p class="text-muted">Calendrier en ligne, gestion des créneaux, confirmations automatiques</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-card p-4 border rounded-3" data-feature="ecommerce">
+                            <h5><i class="fas fa-shopping-cart text-success me-2"></i>E-commerce intégré</h5>
+                            <p class="text-muted">Boutique en ligne, paiement sécurisé, gestion stock</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-card p-4 border rounded-3" data-feature="analytics">
+                            <h5><i class="fas fa-chart-line text-info me-2"></i>Analytics avancés</h5>
+                            <p class="text-muted">Suivi des visiteurs, conversions, rapports détaillés</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature-card p-4 border rounded-3" data-feature="seo">
+                            <h5><i class="fas fa-search text-warning me-2"></i>SEO optimisé</h5>
+                            <p class="text-muted">Référencement naturel, balises meta, sitemap automatique</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Étape 4: Aperçu final -->
+        <div class="step-content d-none" id="stepContent4">
+            <div class="final-preview">
+                <div class="preview-toolbar">
+                    <strong>Aperçu de votre site professionnel</strong>
+                    <div class="device-toggle">
+                        <button class="device-btn active" data-device="desktop"><i class="fas fa-desktop"></i></button>
+                        <button class="device-btn" data-device="tablet"><i class="fas fa-tablet"></i></button>
+                        <button class="device-btn" data-device="mobile"><i class="fas fa-mobile"></i></button>
+                    </div>
+                </div>
+                <div id="finalPreview" style="min-height: 600px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                    <div class="text-center">
+                        <i class="fas fa-magic fa-3x text-muted mb-3"></i>
+                        <h4>Votre site se génère...</h4>
+                        <p class="text-muted">Compilation des éléments professionnels en cours</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Boutons d'action -->
+        <div class="action-buttons">
+            <button class="btn-modern btn-secondary" id="prevBtn" disabled>
+                <i class="fas fa-arrow-left me-2"></i>Précédent
+            </button>
+            <button class="btn-modern btn-primary-modern" id="nextBtn">
+                Suivant<i class="fas fa-arrow-right ms-2"></i>
+            </button>
+            <button class="btn-modern btn-success-modern d-none" id="generateBtn">
+                <i class="fas fa-rocket me-2"></i>Générer mon site pro
+            </button>
+        </div>
+    </div>
+    
+    <script src="./pro-generator.js"></script>
+</body>
+</html>

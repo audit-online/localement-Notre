@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Admin - Localement Vôtre</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .step h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        
+        .step-number {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .admin-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        
+        .admin-button:hover {
+            background: #218838;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #856404;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #155724;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #0c5460;
+        }
+        
+        .account-info {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .test-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .test-button:hover {
+            background: #5a6fd8;
+        }
+        
+        .result {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Configuration du Système d'Authentification</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Important :</strong> Pour que le système d'authentification fonctionne, nous devons d'abord configurer les rôles dans Strapi.
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">1</span>Configuration de l'Admin Strapi</h3>
+            <p>Première étape : créer un compte administrateur principal dans Strapi.</p>
+            
+            <div class="info">
+                <strong>Instructions :</strong>
+                <ol>
+                    <li>Cliquez sur le bouton ci-dessous pour accéder à l'admin Strapi</li>
+                    <li>Si c'est la première fois, créez votre compte super admin</li>
+                    <li>Sinon, connectez-vous avec vos identifiants admin existants</li>
+                </ol>
+            </div>
+            
+            <a href="http://localhost:1337/admin" target="_blank" class="admin-button">
+                🚀 Ouvrir Admin Strapi
+            </a>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">2</span>Configuration des Rôles Utilisateurs</h3>
+            <p>Configurer les rôles personnalisés pour notre marketplace.</p>
+            
+            <div class="info">
+                <strong>Dans l'admin Strapi :</strong>
+                <ol>
+                    <li>Allez dans <strong>Settings → Users & Permissions Plugin → Roles</strong></li>
+                    <li>Vous verrez les rôles par défaut : <code>Authenticated</code> et <code>Public</code></li>
+                    <li>Cliquez sur <strong>Add new role</strong> pour chaque rôle suivant :</li>
+                </ol>
+            </div>
+            
+            <div class="code-block">Rôles à créer :
+1. Super Admin
+   - Name: Super Admin
+   - Description: Accès complet à toute la plateforme
+   - Type: super-admin
+
+2. Commercial  
+   - Name: Commercial
+   - Description: Équipe commerciale et onboarding
+   - Type: commercial
+
+3. Merchant
+   - Name: Merchant
+   - Description: Propriétaires de boutiques
+   - Type: merchant
+
+4. Customer
+   - Name: Customer  
+   - Description: Clients de la marketplace
+   - Type: customer</div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">3</span>Test de Création d'Utilisateur</h3>
+            <p>Tester la création d'utilisateurs avec les nouveaux rôles.</p>
+            
+            <button class="test-button" onclick="testCreateUser()">Tester Création Utilisateur</button>
+            <button class="test-button" onclick="checkRoles()">Vérifier Rôles Disponibles</button>
+            
+            <div id="test-result" class="result"></div>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">4</span>Création Manuelle d'un Super Admin</h3>
+            <p>En attendant la configuration des rôles, voici comment créer manuellement un super admin.</p>
+            
+            <div class="info">
+                <strong>Méthode directe :</strong>
+                <ol>
+                    <li>Dans Strapi Admin : <strong>Content Manager → User (from users-permissions)</strong></li>
+                    <li>Cliquez sur <strong>Create new entry</strong></li>
+                    <li>Remplissez les informations :</li>
+                </ol>
+            </div>
+            
+            <div class="account-info">
+                <strong>Informations pour le Super Admin :</strong><br>
+                Username: <code>superadmin</code><br>
+                Email: <code>admin@localement-votre.fr</code><br>
+                Password: <code>Admin123!</code><br>
+                Confirmed: <code>true</code><br>
+                Blocked: <code>false</code><br>
+                Role: <code>Authenticated</code> (en attendant les rôles personnalisés)
+            </div>
+            
+            <button class="test-button" onclick="testSuperAdminLogin()">Tester Connexion Super Admin</button>
+        </div>
+        
+        <div class="step">
+            <h3><span class="step-number">5</span>Solution Alternative : API directe</h3>
+            <p>Si les rôles ne sont pas encore configurés, utilisons l'API Strapi directe.</p>
+            
+            <button class="test-button" onclick="createSuperAdminDirect()">Créer Super Admin (API directe)</button>
+            <button class="test-button" onclick="createTestUsers()">Créer Utilisateurs de Test</button>
+            
+            <div id="direct-result" class="result"></div>
+        </div>
+        
+        <div class="success">
+            <strong>✅ Une fois configuré :</strong><br>
+            Votre système d'authentification sera pleinement fonctionnel avec :
+            <ul>
+                <li>Connexion/déconnexion</li>
+                <li>Gestion des rôles</li>
+                <li>Dashboards spécialisés</li>
+                <li>Protection des routes</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function checkRoles() {
+            try {
+                const response = await fetch('/api/users-permissions/roles');
+                const roles = await response.json();
+                
+                showResult('test-result', {
+                    success: true,
+                    message: 'Rôles disponibles',
+                    data: roles
+                });
+            } catch (error) {
+                showResult('test-result', {
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        
+        async function testCreateUser() {
+            try {
+                const response = await fetch('/api/auth/local/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'testuser',
+                        email: 'test@example.com',
+                        password: 'TestPassword123!',
+                        userType: 'customer'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                showResult('test-result', {
+                    status: response.status,
+                    success: response.ok,
+                    data: result
+                });
+            } catch (error) {
+                showResult('test-result', {
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        
+        async function createSuperAdminDirect() {
+            try {
+                // D'abord, créer via l'API Strapi directe
+                const response = await fetch('/api/users-permissions/auth/local/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: 'superadmin',
+                        email: 'admin@localement-votre.fr',
+                        password: 'Admin123!'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                showResult('direct-result', {
+                    status: response.status,
+                    success: response.ok,
+                    message: 'Création via API Strapi directe',
+                    data: result
+                });
+            } catch (error) {
+                showResult('direct-result', {
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        
+        async function createTestUsers() {
+            const users = [
+                {
+                    username: 'testcustomer',
+                    email: 'customer@test.fr',
+                    password: 'Customer123!'
+                },
+                {
+                    username: 'testmerchant',
+                    email: 'merchant@test.fr',
+                    password: 'Merchant123!'
+                }
+            ];
+            
+            const results = [];
+            
+            for (const user of users) {
+                try {
+                    const response = await fetch('/api/users-permissions/auth/local/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(user)
+                    });
+                    
+                    const result = await response.json();
+                    results.push({
+                        user: user.email,
+                        success: response.ok,
+                        status: response.status,
+                        data: result
+                    });
+                } catch (error) {
+                    results.push({
+                        user: user.email,
+                        success: false,
+                        error: error.message
+                    });
+                }
+            }
+            
+            showResult('direct-result', {
+                message: 'Création d\'utilisateurs de test',
+                results: results
+            });
+        }
+        
+        async function testSuperAdminLogin() {
+            try {
+                const response = await fetch('/api/auth/local', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        identifier: 'admin@localement-votre.fr',
+                        password: 'Admin123!'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.jwt) {
+                    localStorage.setItem('authToken', result.jwt);
+                }
+                
+                showResult('test-result', {
+                    status: response.status,
+                    success: response.ok,
+                    message: 'Test de connexion Super Admin',
+                    data: result
+                });
+            } catch (error) {
+                showResult('test-result', {
+                    success: false,
+                    error: error.message
+                });
+            }
+        }
+        
+        function showResult(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>

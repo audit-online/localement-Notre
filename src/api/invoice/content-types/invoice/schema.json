@@ -1,0 +1,81 @@
+{
+  "kind": "collectionType",
+  "collectionName": "invoices",
+  "info": {
+    "singularName": "invoice",
+    "pluralName": "invoices",
+    "displayName": "Invoice",
+    "description": "Factures des abonnements"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "invoiceNumber": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "subscription": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subscription.subscription",
+      "inversedBy": "invoices"
+    },
+    "merchant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::merchant.merchant",
+      "inversedBy": "invoices"
+    },
+    "amount": {
+      "type": "decimal",
+      "required": true
+    },
+    "currency": {
+      "type": "string",
+      "default": "EUR"
+    },
+    "tax": {
+      "type": "decimal",
+      "default": 0
+    },
+    "total": {
+      "type": "decimal",
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["draft", "sent", "paid", "overdue", "cancelled"],
+      "default": "draft"
+    },
+    "dueDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "paidAt": {
+      "type": "datetime"
+    },
+    "paymentMethod": {
+      "type": "enumeration",
+      "enum": ["stripe", "paypal", "bank_transfer", "cheque"]
+    },
+    "stripeInvoiceId": {
+      "type": "string",
+      "unique": true
+    },
+    "billingAddress": {
+      "type": "json"
+    },
+    "items": {
+      "type": "json"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "downloadUrl": {
+      "type": "string"
+    }
+  }
+}
