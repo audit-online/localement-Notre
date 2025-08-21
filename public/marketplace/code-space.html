@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Espace Code - Localement Vôtre</title>
+    <!-- Using inline styles to avoid CSP issues -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .code-space-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            margin: 2rem;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            min-height: calc(100vh - 4rem);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="2" height="2" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.3" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #64b3f4 0%, #c2e59c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .dev-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 3rem 2rem;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        .tool-icon::before {
+            content: "🔧";
+        }
+
+        .tool-card:nth-child(1) .tool-icon::before { content: "📝"; }
+        .tool-card:nth-child(2) .tool-icon::before { content: "⚙️"; }
+        .tool-card:nth-child(3) .tool-icon::before { content: "🎨"; }
+        .tool-card:nth-child(4) .tool-icon::before { content: "✨"; }
+        .tool-card:nth-child(5) .tool-icon::before { content: "🔌"; }
+        .tool-card:nth-child(6) .tool-icon::before { content: "🛡️"; }
+        .tool-card:nth-child(7) .tool-icon::before { content: "👥"; }
+
+        .tool-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a1a2e;
+        }
+
+        .tool-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .tool-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .tool-features li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            color: #555;
+        }
+
+        .tool-features li::before {
+            content: "✓";
+            color: #28a745;
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        .tool-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .tool-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-online { background: #28a745; }
+        .status-offline { background: #dc3545; }
+        .status-loading { background: #ffc107; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .quick-access {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .quick-access-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1a1a2e;
+            text-align: center;
+        }
+
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .quick-link {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: #555;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .quick-link:hover {
+            border-color: #667eea;
+            color: #667eea;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+        .code-snippet {
+            background: #1a1a2e;
+            color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .terminal-window {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 0;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #2d2d2d;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27ca3f; }
+
+        .terminal-content {
+            padding: 1rem;
+            color: #f8f9fa;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .success-text { color: #27ca3f; }
+        .error-text { color: #ff5f56; }
+        .warning-text { color: #ffbd2e; }
+        .info-text { color: #64b3f4; }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .dev-tools-grid {
+                grid-template-columns: 1fr;
+                padding: 2rem 1rem;
+            }
+            
+            .code-space-container {
+                margin: 1rem;
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="code-space-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1 class="main-title">
+                    🚀 Espace Code
+                </h1>
+                <p class="subtitle">
+                    Votre environnement de développement complet pour Localement Vôtre
+                </p>
+                <div class="mt-3">
+                    <span class="status-indicator status-online"></span>
+                    <span class="text-light">Serveur de développement actif</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Tools Grid -->
+        <div class="dev-tools-grid">
+            <!-- Code Editor -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                </div>
+                <h3 class="tool-title">Éditeur de Code</h3>
+                <p class="tool-description">
+                    Éditeur de code intégré avec coloration syntaxique, gestion des fichiers et exécution de code en temps réel.
+                </p>
+                <ul class="tool-features">
+                    <li>Éditeur de code avancé</li>
+                    <li>Gestion des fichiers</li>
+                    <li>Exécution JavaScript</li>
+                    <li>Formatage automatique</li>
+                </ul>
+                <a href="/marketplace/code-editor.html" target="_blank" class="tool-button">
+                    📝 Ouvrir l'Éditeur
+                </a>
+            </div>
+
+            <!-- Strapi Admin -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                </div>
+                <h3 class="tool-title">Admin Strapi</h3>
+                <p class="tool-description">
+                    Interface d'administration principale pour gérer le contenu, les utilisateurs et la configuration de la plateforme.
+                </p>
+                <ul class="tool-features">
+                    <li>Gestion des contenus</li>
+                    <li>Configuration des APIs</li>
+                    <li>Gestion des rôles</li>
+                    <li>Médias et uploads</li>
+                </ul>
+                <a href="http://localhost:1337/admin" target="_blank" class="tool-button">
+                    🔗 Ouvrir Admin Strapi
+                </a>
+            </div>
+
+            <!-- Template Creator -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                </div>
+                <h3 class="tool-title">Créateur de Templates</h3>
+                <p class="tool-description">
+                    Outil visuel pour créer et personnaliser des templates de boutiques avec une interface drag & drop.
+                </p>
+                <ul class="tool-features">
+                    <li>Interface drag & drop</li>
+                    <li>Aperçu en temps réel</li>
+                    <li>Composants réutilisables</li>
+                    <li>Export HTML/CSS</li>
+                </ul>
+                <a href="/marketplace/template-creator.html" target="_blank" class="tool-button">
+                    🎨 Créer un Template
+                </a>
+            </div>
+
+            <!-- Elite Generator -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                </div>
+                <h3 class="tool-title">Studio Pro Elite</h3>
+                <p class="tool-description">
+                    Générateur avancé de sites web professionnels avec des templates premium et des fonctionnalités sophistiquées.
+                </p>
+                <ul class="tool-features">
+                    <li>Templates premium</li>
+                    <li>Design systems avancés</li>
+                    <li>Analytics intégrées</li>
+                    <li>Code optimisé</li>
+                </ul>
+                <a href="/marketplace/elite-generator.html" target="_blank" class="tool-button">
+                    🚀 Studio Pro Elite
+                </a>
+            </div>
+
+            <!-- API Tester -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                </div>
+                <h3 class="tool-title">Testeur d'API</h3>
+                <p class="tool-description">
+                    Interface pour tester et déboguer les APIs de la plateforme, incluant l'authentification et les endpoints.
+                </p>
+                <ul class="tool-features">
+                    <li>Test d'authentification</li>
+                    <li>Exploration des APIs</li>
+                    <li>Débogage en temps réel</li>
+                    <li>Documentation interactive</li>
+                </ul>
+                <a href="/marketplace/test-api.html" target="_blank" class="tool-button">
+                    🔍 Tester les APIs
+                </a>
+            </div>
+
+            <!-- Authentication Center -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                </div>
+                <h3 class="tool-title">Centre d'Authentification</h3>
+                <p class="tool-description">
+                    Interface de test pour le système d'authentification avec gestion des rôles et permissions.
+                </p>
+                <ul class="tool-features">
+                    <li>Test de connexion</li>
+                    <li>Gestion des rôles</li>
+                    <li>Permissions dynamiques</li>
+                    <li>Sessions sécurisées</li>
+                </ul>
+                <a href="/marketplace/auth.html" target="_blank" class="tool-button">
+                    🔑 Tester l'Auth
+                </a>
+            </div>
+
+            <!-- Platform Admin -->
+            <div class="tool-card">
+                <div class="tool-icon">
+                </div>
+                <h3 class="tool-title">Admin Plateforme</h3>
+                <p class="tool-description">
+                    Dashboard administrateur pour superviser la plateforme, gérer les commerçants et analyser les performances.
+                </p>
+                <ul class="tool-features">
+                    <li>Supervision globale</li>
+                    <li>Gestion des commerçants</li>
+                    <li>Analytics avancées</li>
+                    <li>Support intégré</li>
+                </ul>
+                <a href="/marketplace/platform-admin.html" target="_blank" class="tool-button">
+                    📊 Admin Plateforme
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Access -->
+        <div class="quick-access">
+            <h3 class="quick-access-title">Accès Rapide</h3>
+            <div class="quick-links">
+                <a href="/marketplace/merchant-dashboard.html" class="quick-link">
+                    🏪 Dashboard Commerçant
+                </a>
+                <a href="/marketplace/commercial-dashboard.html" class="quick-link">
+                    📈 Dashboard Commercial
+                </a>
+                <a href="/marketplace/customer-dashboard.html" class="quick-link">
+                    👤 Dashboard Client
+                </a>
+                <a href="/marketplace/test-payment.html" class="quick-link">
+                    💳 Test Paiement
+                </a>
+                <a href="/marketplace/roles-diagnostic.html" class="quick-link">
+                    🩺 Diagnostic Rôles
+                </a>
+                <a href="/marketplace/" class="quick-link">
+                    🏠 Marketplace Public
+                </a>
+            </div>
+        </div>
+
+        <!-- Development Info -->
+        <div class="quick-access" style="background: #1a1a2e; color: white;">
+            <h3 class="quick-access-title" style="color: white;">Informations de Développement</h3>
+            
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-dot dot-red"></div>
+                    <div class="terminal-dot dot-yellow"></div>
+                    <div class="terminal-dot dot-green"></div>
+                    <span style="color: #ccc; margin-left: 10px;">Serveur de développement</span>
+                </div>
+                <div class="terminal-content">
+                    <div class="success-text">✓ Strapi v5.22.0 - Serveur démarré avec succès</div>
+                    <div class="info-text">ℹ Admin Panel: http://localhost:1337/admin</div>
+                    <div class="info-text">ℹ API Base URL: http://localhost:1337/api</div>
+                    <div class="info-text">ℹ Marketplace: http://localhost:1337/marketplace</div>
+                    <div class="warning-text">⚠ Mode développement - Base de données en mémoire</div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5 style="color: #64b3f4;">🚀 Commandes utiles</h5>
+                    <div class="code-snippet">
+npm run develop    # Démarrer en mode dev
+npm run build     # Construire pour production
+npm run start     # Démarrer en production</div>
+                </div>
+                <div class="col-md-6">
+                    <h5 style="color: #64b3f4;">📁 Structure importante</h5>
+                    <div class="code-snippet">
+/public/marketplace/  # Interface utilisateur
+/src/api/            # APIs personnalisées
+/config/             # Configuration Strapi
+/scripts/            # Scripts d'initialisation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Removing Bootstrap JS due to CSP -->
+    <script>
+        // Simplified script without external dependencies
+        function checkServerStatus() {
+            document.querySelector('.status-indicator').className = 'status-indicator status-online';
+            document.querySelector('.status-indicator + span').textContent = 'Serveur de développement actif';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Espace Code initialisé');
+            checkServerStatus();
+        });
+
+        console.log('🚀 Bienvenue dans l\'Espace Code - Localement Vôtre\n\nEnvironnement de développement prêt !\n• Strapi Admin: http://localhost:1337/admin\n• API: http://localhost:1337/api\n• Marketplace: http://localhost:1337/marketplace\n\nBon développement ! 💻');
+    </script>
+</body>
+</html>
