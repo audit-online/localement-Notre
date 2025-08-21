@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📝 Éditeur de Code - Localement Vôtre</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .editor-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #252526;
+            border-right: 1px solid #3c3c3c;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 10px 15px;
+            background: #2d2d30;
+            border-bottom: 1px solid #3c3c3c;
+            font-weight: bold;
+            color: #cccccc;
+        }
+
+        .file-tree {
+            flex: 1;
+            padding: 10px 0;
+        }
+
+        .file-item {
+            padding: 5px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .file-item:hover {
+            background: #2a2d2e;
+        }
+
+        .file-item.active {
+            background: #094771;
+            color: white;
+        }
+
+        .file-item.folder::before {
+            content: "📁 ";
+        }
+
+        .file-item.file::before {
+            content: "📄 ";
+        }
+
+        .file-item.js::before {
+            content: "📄 ";
+            color: #f7df1e;
+        }
+
+        .file-item.html::before {
+            content: "🌐 ";
+            color: #e34c26;
+        }
+
+        .file-item.css::before {
+            content: "🎨 ";
+            color: #1572b6;
+        }
+
+        .main-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-tabs {
+            display: flex;
+            background: #2d2d30;
+            border-bottom: 1px solid #3c3c3c;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #2d2d30;
+            border-right: 1px solid #3c3c3c;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+            position: relative;
+            font-size: 14px;
+        }
+
+        .tab:hover {
+            background: #3c3c3c;
+        }
+
+        .tab.active {
+            background: #1e1e1e;
+            color: white;
+        }
+
+        .tab .close {
+            margin-left: 10px;
+            opacity: 0.7;
+            font-weight: bold;
+        }
+
+        .tab .close:hover {
+            opacity: 1;
+            color: #ff6b6b;
+        }
+
+        .editor-area {
+            flex: 1;
+            display: flex;
+        }
+
+        .line-numbers {
+            background: #1e1e1e;
+            color: #858585;
+            padding: 20px 10px;
+            text-align: right;
+            border-right: 1px solid #3c3c3c;
+            font-size: 14px;
+            line-height: 1.5;
+            user-select: none;
+            width: 60px;
+        }
+
+        .code-editor {
+            flex: 1;
+            background: #1e1e1e;
+            border: none;
+            outline: none;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #d4d4d4;
+            resize: none;
+            white-space: pre;
+            overflow-wrap: normal;
+            overflow-x: auto;
+        }
+
+        .status-bar {
+            background: #007acc;
+            color: white;
+            padding: 5px 15px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toolbar {
+            background: #2d2d30;
+            padding: 10px 15px;
+            border-bottom: 1px solid #3c3c3c;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #1177bb;
+        }
+
+        .btn.danger {
+            background: #d73a49;
+        }
+
+        .btn.danger:hover {
+            background: #e53e3e;
+        }
+
+        .btn.success {
+            background: #28a745;
+        }
+
+        .btn.success:hover {
+            background: #34ce57;
+        }
+
+        .welcome-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            text-align: center;
+        }
+
+        .welcome-screen h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #007acc;
+        }
+
+        .welcome-screen p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-card {
+            background: #252526;
+            border: 1px solid #3c3c3c;
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .action-card:hover {
+            background: #2d2d30;
+            border-color: #007acc;
+            transform: translateY(-2px);
+        }
+
+        .action-card h3 {
+            color: #007acc;
+            margin-bottom: 0.5rem;
+        }
+
+        .console-output {
+            background: #0c0c0c;
+            color: #00ff00;
+            padding: 10px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            height: 150px;
+            overflow-y: auto;
+            border-top: 1px solid #3c3c3c;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            
+            .editor-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 150px;
+            }
+            
+            .file-tree {
+                display: flex;
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 10px;
+            }
+            
+            .file-item {
+                white-space: nowrap;
+                margin-right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <!-- Sidebar with file tree -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                📁 Explorateur de Fichiers
+            </div>
+            <div class="file-tree">
+                <div class="file-item folder active" onclick="selectFile('marketplace')">
+                    marketplace/
+                </div>
+                <div class="file-item html" onclick="openFile('index.html', 'html')" style="margin-left: 20px;">
+                    index.html
+                </div>
+                <div class="file-item css" onclick="openFile('styles.css', 'css')" style="margin-left: 20px;">
+                    styles.css
+                </div>
+                <div class="file-item js" onclick="openFile('app.js', 'javascript')" style="margin-left: 20px;">
+                    app.js
+                </div>
+                <div class="file-item html" onclick="openFile('auth.html', 'html')" style="margin-left: 20px;">
+                    auth.html
+                </div>
+                <div class="file-item js" onclick="openFile('auth.js', 'javascript')" style="margin-left: 20px;">
+                    auth.js
+                </div>
+                <div class="file-item html" onclick="openFile('template-creator.html', 'html')" style="margin-left: 20px;">
+                    template-creator.html
+                </div>
+                <div class="file-item js" onclick="openFile('template-creator.js', 'javascript')" style="margin-left: 20px;">
+                    template-creator.js
+                </div>
+            </div>
+        </div>
+
+        <!-- Main editor area -->
+        <div class="main-editor">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <button class="btn" onclick="saveFile()">💾 Enregistrer</button>
+                <button class="btn success" onclick="runCode()">▶️ Exécuter</button>
+                <button class="btn" onclick="formatCode()">🎨 Formater</button>
+                <button class="btn danger" onclick="clearEditor()">🗑️ Effacer</button>
+                <button class="btn" onclick="goBack()">🔙 Retour Code Space</button>
+            </div>
+
+            <!-- Editor tabs -->
+            <div class="editor-tabs" id="editorTabs">
+                <!-- Tabs will be added dynamically -->
+            </div>
+
+            <!-- Welcome screen (shown when no file is open) -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <h1>📝 Éditeur de Code</h1>
+                <p>Sélectionnez un fichier dans l'explorateur ou créez un nouveau fichier</p>
+                
+                <div class="quick-actions">
+                    <div class="action-card" onclick="createNewFile('html')">
+                        <h3>🌐 Nouveau HTML</h3>
+                        <p>Créer une page HTML</p>
+                    </div>
+                    <div class="action-card" onclick="createNewFile('css')">
+                        <h3>🎨 Nouveau CSS</h3>
+                        <p>Créer une feuille de style</p>
+                    </div>
+                    <div class="action-card" onclick="createNewFile('javascript')">
+                        <h3>⚡ Nouveau JS</h3>
+                        <p>Créer un script JavaScript</p>
+                    </div>
+                    <div class="action-card" onclick="openExistingFile()">
+                        <h3>📂 Ouvrir Fichier</h3>
+                        <p>Ouvrir un fichier existant</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor area (hidden initially) -->
+            <div class="editor-area" id="editorArea" style="display: none;">
+                <div class="line-numbers" id="lineNumbers">1</div>
+                <textarea class="code-editor" id="codeEditor" placeholder="Commencez à taper votre code ici..."></textarea>
+            </div>
+
+            <!-- Console output -->
+            <div class="console-output" id="consoleOutput" style="display: none;">
+                <div style="color: #007acc;">Console de sortie:</div>
+            </div>
+
+            <!-- Status bar -->
+            <div class="status-bar">
+                <div>
+                    <span id="fileStatus">Aucun fichier ouvert</span>
+                </div>
+                <div>
+                    <span id="cursorPosition">Ln 1, Col 1</span> | 
+                    <span id="fileType">Aucun type</span> | 
+                    <span>UTF-8</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFile = null;
+        let openTabs = [];
+        let activeTab = null;
+
+        // File templates
+        const fileTemplates = {
+            html: `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveau fichier HTML</title>
+</head>
+<body>
+    <h1>Bonjour Localement Vôtre!</h1>
+    <p>Commencez à créer votre contenu ici...</p>
+</body>
+</html>`,
+            css: `/* Styles pour Localement Vôtre */
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Ajoutez vos styles ici */`,
+            javascript: `// Script JavaScript pour Localement Vôtre
+
+console.log('🚀 JavaScript initialisé');
+
+// Configuration de base
+const config = {
+    appName: 'Localement Vôtre',
+    version: '1.0.0',
+    debug: true
+};
+
+// Fonction d'initialisation
+function init() {
+    console.log(\`\${config.appName} v\${config.version} démarré\`);
+    
+    // Votre code ici
+}
+
+// Démarrage de l'application
+document.addEventListener('DOMContentLoaded', init);`
+        };
+
+        function selectFile(fileName) {
+            // Update active file in sidebar
+            document.querySelectorAll('.file-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function openFile(fileName, fileType) {
+            // Check if file is already open
+            if (openTabs.find(tab => tab.name === fileName)) {
+                switchToTab(fileName);
+                return;
+            }
+
+            // Create new tab
+            const tab = {
+                name: fileName,
+                type: fileType,
+                content: fileTemplates[fileType] || '// Nouveau fichier',
+                modified: false
+            };
+
+            openTabs.push(tab);
+            activeTab = fileName;
+            
+            updateTabs();
+            showEditor();
+            loadFileContent(tab);
+            updateStatus();
+        }
+
+        function createNewFile(fileType) {
+            const fileName = prompt(\`Nom du nouveau fichier \${fileType}:\`);
+            if (fileName) {
+                const fullName = fileName.includes('.') ? fileName : \`\${fileName}.\${fileType === 'javascript' ? 'js' : fileType}\`;
+                openFile(fullName, fileType);
+            }
+        }
+
+        function openExistingFile() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.html,.css,.js,.json,.md,.txt';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const fileType = getFileType(file.name);
+                        const tab = {
+                            name: file.name,
+                            type: fileType,
+                            content: e.target.result,
+                            modified: false
+                        };
+                        
+                        openTabs.push(tab);
+                        activeTab = file.name;
+                        
+                        updateTabs();
+                        showEditor();
+                        loadFileContent(tab);
+                        updateStatus();
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+
+        function getFileType(fileName) {
+            const ext = fileName.split('.').pop().toLowerCase();
+            const typeMap = {
+                'html': 'html',
+                'css': 'css',
+                'js': 'javascript',
+                'json': 'json',
+                'md': 'markdown'
+            };
+            return typeMap[ext] || 'text';
+        }
+
+        function updateTabs() {
+            const tabsContainer = document.getElementById('editorTabs');
+            tabsContainer.innerHTML = '';
+
+            openTabs.forEach(tab => {
+                const tabElement = document.createElement('div');
+                tabElement.className = \`tab \${tab.name === activeTab ? 'active' : ''}\`;
+                tabElement.innerHTML = \`
+                    \${tab.name}\${tab.modified ? ' •' : ''}
+                    <span class="close" onclick="closeTab('\${tab.name}')">&times;</span>
+                \`;
+                tabElement.onclick = (e) => {
+                    if (e.target.classList.contains('close')) return;
+                    switchToTab(tab.name);
+                };
+                tabsContainer.appendChild(tabElement);
+            });
+        }
+
+        function switchToTab(tabName) {
+            const tab = openTabs.find(t => t.name === tabName);
+            if (tab) {
+                // Save current content before switching
+                if (activeTab) {
+                    const currentTab = openTabs.find(t => t.name === activeTab);
+                    if (currentTab) {
+                        currentTab.content = document.getElementById('codeEditor').value;
+                    }
+                }
+
+                activeTab = tabName;
+                loadFileContent(tab);
+                updateTabs();
+                updateStatus();
+            }
+        }
+
+        function closeTab(tabName) {
+            const tabIndex = openTabs.findIndex(t => t.name === tabName);
+            if (tabIndex !== -1) {
+                const tab = openTabs[tabIndex];
+                
+                if (tab.modified) {
+                    if (!confirm(\`Le fichier \${tabName} a des modifications non sauvées. Fermer quand même ?\`)) {
+                        return;
+                    }
+                }
+
+                openTabs.splice(tabIndex, 1);
+
+                if (activeTab === tabName) {
+                    if (openTabs.length > 0) {
+                        activeTab = openTabs[Math.max(0, tabIndex - 1)].name;
+                        const newTab = openTabs.find(t => t.name === activeTab);
+                        loadFileContent(newTab);
+                    } else {
+                        activeTab = null;
+                        showWelcome();
+                    }
+                }
+
+                updateTabs();
+                updateStatus();
+            }
+        }
+
+        function loadFileContent(tab) {
+            const editor = document.getElementById('codeEditor');
+            editor.value = tab.content;
+            updateLineNumbers();
+            
+            // Focus on editor
+            editor.focus();
+        }
+
+        function showEditor() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('editorArea').style.display = 'flex';
+        }
+
+        function showWelcome() {
+            document.getElementById('welcomeScreen').style.display = 'flex';
+            document.getElementById('editorArea').style.display = 'none';
+            document.getElementById('consoleOutput').style.display = 'none';
+        }
+
+        function updateLineNumbers() {
+            const editor = document.getElementById('codeEditor');
+            const lineNumbers = document.getElementById('lineNumbers');
+            const lines = editor.value.split('\\n').length;
+            
+            let numbersHtml = '';
+            for (let i = 1; i <= lines; i++) {
+                numbersHtml += i + '\\n';
+            }
+            lineNumbers.textContent = numbersHtml;
+        }
+
+        function updateStatus() {
+            const fileStatus = document.getElementById('fileStatus');
+            const fileType = document.getElementById('fileType');
+            const cursorPosition = document.getElementById('cursorPosition');
+
+            if (activeTab) {
+                const tab = openTabs.find(t => t.name === activeTab);
+                fileStatus.textContent = \`\${activeTab}\${tab.modified ? ' • modifié' : ''}\`;
+                fileType.textContent = tab.type;
+            } else {
+                fileStatus.textContent = 'Aucun fichier ouvert';
+                fileType.textContent = 'Aucun type';
+            }
+        }
+
+        function saveFile() {
+            if (!activeTab) return;
+
+            const tab = openTabs.find(t => t.name === activeTab);
+            if (tab) {
+                tab.content = document.getElementById('codeEditor').value;
+                tab.modified = false;
+                
+                // Create download link
+                const blob = new Blob([tab.content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = tab.name;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                updateTabs();
+                updateStatus();
+                console.log(\`💾 Fichier \${tab.name} sauvegardé\`);
+            }
+        }
+
+        function runCode() {
+            if (!activeTab) return;
+
+            const tab = openTabs.find(t => t.name === activeTab);
+            const consoleOutput = document.getElementById('consoleOutput');
+            
+            consoleOutput.style.display = 'block';
+            consoleOutput.innerHTML = '<div style="color: #007acc;">Console de sortie:</div>';
+
+            if (tab.type === 'javascript') {
+                try {
+                    // Capture console.log
+                    const originalLog = console.log;
+                    console.log = function(...args) {
+                        consoleOutput.innerHTML += '<div style="color: #00ff00;">▶ ' + args.join(' ') + '</div>';
+                        originalLog.apply(console, args);
+                    };
+
+                    // Execute code
+                    eval(document.getElementById('codeEditor').value);
+                    
+                    // Restore console.log
+                    console.log = originalLog;
+                    
+                    consoleOutput.innerHTML += '<div style="color: #00ff00;">✓ Code exécuté avec succès</div>';
+                } catch (error) {
+                    consoleOutput.innerHTML += '<div style="color: #ff6b6b;">❌ Erreur: ' + error.message + '</div>';
+                }
+            } else if (tab.type === 'html') {
+                // Open HTML in new window
+                const newWindow = window.open('', '_blank');
+                newWindow.document.write(document.getElementById('codeEditor').value);
+                newWindow.document.close();
+                consoleOutput.innerHTML += '<div style="color: #00ff00;">🌐 HTML ouvert dans un nouvel onglet</div>';
+            } else {
+                consoleOutput.innerHTML += '<div style="color: #ffaa00;">⚠ Type de fichier non exécutable</div>';
+            }
+
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function formatCode() {
+            const editor = document.getElementById('codeEditor');
+            let content = editor.value;
+
+            // Simple formatting for HTML
+            if (activeTab && openTabs.find(t => t.name === activeTab).type === 'html') {
+                content = content.replace(/></g, '>\\n<');
+                content = content.replace(/^\\s+/gm, '');
+                
+                let indentLevel = 0;
+                content = content.split('\\n').map(line => {
+                    line = line.trim();
+                    if (line.startsWith('</')) indentLevel--;
+                    const indentedLine = '  '.repeat(Math.max(0, indentLevel)) + line;
+                    if (line.startsWith('<') && !line.startsWith('</') && !line.endsWith('/>')) indentLevel++;
+                    return indentedLine;
+                }).join('\\n');
+            }
+
+            editor.value = content;
+            updateLineNumbers();
+            
+            if (activeTab) {
+                const tab = openTabs.find(t => t.name === activeTab);
+                tab.modified = true;
+                updateTabs();
+            }
+        }
+
+        function clearEditor() {
+            if (activeTab && confirm('Êtes-vous sûr de vouloir effacer le contenu ?')) {
+                document.getElementById('codeEditor').value = '';
+                updateLineNumbers();
+                
+                const tab = openTabs.find(t => t.name === activeTab);
+                tab.modified = true;
+                updateTabs();
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/marketplace/code-space.html';
+        }
+
+        // Event listeners
+        document.getElementById('codeEditor').addEventListener('input', function() {
+            updateLineNumbers();
+            
+            if (activeTab) {
+                const tab = openTabs.find(t => t.name === activeTab);
+                tab.modified = true;
+                updateTabs();
+                updateStatus();
+            }
+        });
+
+        document.getElementById('codeEditor').addEventListener('scroll', function() {
+            document.getElementById('lineNumbers').scrollTop = this.scrollTop;
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 's':
+                        e.preventDefault();
+                        saveFile();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        runCode();
+                        break;
+                    case 'w':
+                        e.preventDefault();
+                        if (activeTab) closeTab(activeTab);
+                        break;
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📝 Éditeur de Code initialisé');
+            updateStatus();
+        });
+    </script>
+</body>
+</html>
